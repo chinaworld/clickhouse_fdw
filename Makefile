@@ -25,7 +25,7 @@ REGRESS      = $(patsubst test/sql/%.sql,%,$(TESTS))
 REGRESS_OPTS = --inputdir=test --outputdir=test \
 	--load-language=plpgsql --load-extension=$(EXTENSION)
 MODULE_big      = $(EXTENSION)
-OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c)) src/ch/Client/Connection.o
+OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c))
 PG_CONFIG    = ~/project/bin/pg_config
 
 all: sql/$(EXTENSION)--$(EXTVERSION).sql
