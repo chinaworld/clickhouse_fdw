@@ -26,7 +26,7 @@ REGRESS_OPTS = --inputdir=test --outputdir=test \
 MODULE_big      = $(EXTENSION)
 OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c)) 
 PG_CONFIG    = ~/project/bin/pg_config
-SHLIB_LINK  += /home/x4m/clickhouse/build/dbms/libdbms.a
+SHLIB_LINK  += -lstdc++ $(shell find /home/x4m/clickhouse/build/dbms/ -type f -name '*.a')
 
 
 all: sql/$(EXTENSION)--$(EXTVERSION).sql
