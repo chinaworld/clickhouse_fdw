@@ -8,5 +8,5 @@ git clone -b stable https://github.com/yandex/ClickHouse.git
 cd ClickHouse
 mkdir build
 cd build
-cmake .. -DCMAKE_POSITION_INDEPENDENT_CODE=1
+cmake .. -DCMAKE_POSITION_INDEPENDENT_CODE=1 -DENABLE_ICU=0
 make clickhouse -j 4
