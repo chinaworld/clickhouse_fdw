@@ -13,7 +13,6 @@
 # 
 ##############################################################################
 
-
 EXTENSION    = clickhouse_fdw
 EXTVERSION   = $(shell grep default_version $(EXTENSION).control | sed -e "s/default_version[[:space:]]*=[[:space:]]*'\([^']*\)'/\1/")
 
@@ -25,8 +24,10 @@ REGRESS      = $(patsubst test/sql/%.sql,%,$(TESTS))
 REGRESS_OPTS = --inputdir=test --outputdir=test \
 	--load-language=plpgsql --load-extension=$(EXTENSION)
 MODULE_big      = $(EXTENSION)
-OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c))
+OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c)) 
 PG_CONFIG    = ~/project/bin/pg_config
+SHLIB_LINK  += /home/x4m/clickhouse/build/dbms/libdbms.a
+
 
 all: sql/$(EXTENSION)--$(EXTVERSION).sql
 

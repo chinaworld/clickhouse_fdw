@@ -25,6 +25,8 @@
 
 PG_MODULE_MAGIC;
 
+extern void TestConnection();
+
 /*
  * SQL functions
  */
@@ -213,6 +215,7 @@ Datum
 clickhouse_fdw_handler(PG_FUNCTION_ARGS)
 {
 	FdwRoutine *fdwroutine = makeNode(FdwRoutine);
+	TestConnection();
 
 	elog(DEBUG1, "entering function %s", __func__);
 
