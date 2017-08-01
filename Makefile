@@ -26,7 +26,9 @@ REGRESS_OPTS = --inputdir=test --outputdir=test \
 MODULE_big      = $(EXTENSION)
 OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c)) 
 PG_CONFIG    = ~/project/bin/pg_config
-SHLIB_LINK  += $(shell find /home/x4m/clickhouse/build/ -type f -name '*.a'|tac) -lstdc++ $(shell pkg-config --libs --cflags icu-uc icu-io) -lanl $(shell find /home/x4m/clickhouse/build/ -type f -name '*.a'|tac) 
+CH_HOME      = ~/project/ClickHouse
+CH_LIBS      = $(shell find $(CH_HOME)/build/ -type f -name '*.a'|tac)
+SHLIB_LINK  += $(CH_LIBS) -lstdc++ $(shell pkg-config --libs --cflags icu-uc icu-io) -lanl $(CH_LIBS) 
 
 
 all: sql/$(EXTENSION)--$(EXTVERSION).sql
