@@ -67,8 +67,8 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
     const char * end = begin + query.size();
                 const char * pos = begin;
             String message;
-            res = DB::tryParseQuery(parser, pos, end, message, true, "", allow_multi_statements);
+            res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
-                DB::ASTInsertQuery * insert = typeid_cast<ASTInsertQuery *>(&*res);
+                DB::ASTInsertQuery * insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
 }
 
