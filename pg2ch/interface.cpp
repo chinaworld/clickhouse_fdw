@@ -49,7 +49,12 @@
 #include <Functions/registerFunctions.h>
 #include <AggregateFunctions/registerAggregateFunctions.h>
 
+
+using String = std::string;
 extern "C" void TestConnection(){}
+
+class IAST;
+using ASTPtr = std::shared_ptr<IAST>;
 
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {

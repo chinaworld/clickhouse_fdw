@@ -22,6 +22,7 @@
 #include "optimizer/pathnode.h"
 #include "optimizer/planmain.h"
 #include "optimizer/restrictinfo.h"
+#include "../pg2ch/interface.h"
 
 PG_MODULE_MAGIC;
 
@@ -216,6 +217,7 @@ clickhouse_fdw_handler(PG_FUNCTION_ARGS)
 {
 	FdwRoutine *fdwroutine = makeNode(FdwRoutine);
 	TestConnection();
+	ExecuteCHQuery("insert into x values (1,1)");
 
 	elog(DEBUG1, "entering function %s", __func__);
 

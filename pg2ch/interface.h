@@ -1,7 +1,7 @@
 
 
 
-extern "C" void TestConnection();
+extern void TestConnection();
 
 
-extern "C" void ExecuteCHQuery(char *cstrQuery);
+extern void ExecuteCHQuery(char *cstrQuery);
