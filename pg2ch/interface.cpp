@@ -64,13 +64,13 @@ static void doInsert(DB::ASTInsertQuery * query)
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     String query(cstrQuery);
+    const char * begin = query.data();
+    const char * end = begin + query.size();
+    const char * pos = begin;
 
         DB::ParserQuery parser(end);
         ASTPtr res;
 
-    const char * begin = query.data();
-    const char * end = begin + query.size();
-                const char * pos = begin;
             String message;
             res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
