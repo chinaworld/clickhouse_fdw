@@ -54,7 +54,7 @@ using String = std::string;
 extern "C" void TestConnection(){}
 
 class IAST;
-using ASTPtr = std::shared_ptr<IAST>;
+using ASTPtr = std::shared_ptr<DB::IAST>;
 
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
@@ -70,5 +70,10 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
                 DB::ASTInsertQuery * insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
+                if(!insert)
+                {
+                    int z = 0;
+                    int d = 1/z;
+                }
 }
 
