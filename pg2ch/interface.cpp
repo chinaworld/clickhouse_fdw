@@ -60,15 +60,15 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     String query(cstrQuery);
 
-        ParserQuery parser(end);
+        DB::ParserQuery parser(end);
         ASTPtr res;
 
     const char * begin = query.data();
     const char * end = begin + query.size();
                 const char * pos = begin;
             String message;
-            res = tryParseQuery(parser, pos, end, message, true, "", allow_multi_statements);
+            res = DB::tryParseQuery(parser, pos, end, message, true, "", allow_multi_statements);
 
-                ASTInsertQuery * insert = typeid_cast<ASTInsertQuery *>(&*res);
+                DB::ASTInsertQuery * insert = typeid_cast<ASTInsertQuery *>(&*res);
 }
 
