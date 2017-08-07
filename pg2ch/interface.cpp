@@ -76,5 +76,11 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
                 DB::ASTInsertQuery * insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
                 doInsert(insert);
+
+
+        auto connection = std::make_unique<Connection>("loclhost", DBMS_DEFAULT_PORT, "", "", "", "client", true,
+            Poco::Timespan(config().getInt("connect_timeout", DBMS_DEFAULT_CONNECT_TIMEOUT_SEC), 0),
+            Poco::Timespan(config().getInt("receive_timeout", DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC), 0),
+            Poco::Timespan(config().getInt("send_timeout", DBMS_DEFAULT_SEND_TIMEOUT_SEC), 0));
 }
 
