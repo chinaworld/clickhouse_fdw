@@ -49,38 +49,44 @@
 #include <Functions/registerFunctions.h>
 #include <AggregateFunctions/registerAggregateFunctions.h>
 
-
 using String = std::string;
-extern "C" void TestConnection(){}
+extern "C" void TestConnection() {}
 
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
-static void doInsert(DB::ASTInsertQuery * query)
+static void doInsert(DB::ASTInsertQuery *query)
 {
-
 }
 
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
-    String query(cstrQuery);
-    const char * begin = query.data();
-    const char * end = begin + query.size();
-    const char * pos = begin;
+    try
+    {
+        String query(cstrQuery);
+        const char *begin = query.data();
+        const char *end = begin + query.size();
+        const char *pos = begin;
 
         DB::ParserQuery parser(end);
         ASTPtr res;
 
-            String message;
-            res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
+        String message;
+        res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
-                DB::ASTInsertQuery * insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
-                doInsert(insert);
-
+        DB::ASTInsertQuery *insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
+        doInsert(insert);
 
         auto connection = std::make_unique<DB::Connection>("loclhost", DBMS_DEFAULT_PORT, "", "", "", "client", DB::Protocol::Compression::Enable,
-            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
-            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
-            Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
+                                                           Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
+                                                           Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
+                                                           Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
+    }
+    catch (const Exception &e)
+    {
+        std::cerr << std::endl
+                  << "Exception on client:" << std::endl
+                  << "Code: " << e.code() << ". " << e.displayText() << std::endl
+                  << std::endl;
+    }
 }
-
