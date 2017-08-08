@@ -82,7 +82,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
     }
-    catch (const Exception &e)
+    catch (const Poco::Exception &e)
     {
         std::cerr << std::endl
                   << "Exception on client:" << std::endl
