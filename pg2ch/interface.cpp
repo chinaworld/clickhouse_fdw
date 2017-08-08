@@ -55,6 +55,8 @@ extern "C" void TestConnection() {}
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
+static DB::Context context = DB::Context::createGlobal();
+
 static void doInsert(DB::ASTInsertQuery *query)
 {
 }
