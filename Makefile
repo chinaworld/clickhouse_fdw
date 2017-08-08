@@ -28,7 +28,7 @@ OBJS         =  $(patsubst %.c,%.o,$(wildcard src/*.c))
 PG_CONFIG    = ~/project/bin/pg_config
 CH_HOME      = ~/project/ClickHouse
 CH_LIBS      = $(shell find $(CH_HOME)/build/ -type f -name '*.a'|tac)
-SHLIB_LINK  += $(CH_LIBS) -lstdc++ $(shell pkg-config --libs --cflags icu-uc icu-io) -lanl -lodbc $(shell mysql_config --libs) $(CH_LIBS) 
+SHLIB_LINK  += $(CH_LIBS) -lstdc++ $(shell pkg-config --libs --cflags icu-uc icu-io) -lanl -lodbc $(shell mysql_config --libs) -lssl -lcrypto $(CH_LIBS) 
 
 
 all: sql/$(EXTENSION)--$(EXTVERSION).sql
