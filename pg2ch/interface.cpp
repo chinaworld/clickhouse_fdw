@@ -81,6 +81,15 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                                                            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
+        connection->forceConnected();
+        /*String query_without_data = insert->data
+                                        ? query.substr(0, parsed_insert_query.data - query.data())
+                                        : query;*/
+
+        //if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
+        //    throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
+
+        connection->sendQuery(query, "", QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
     }
     catch (const Poco::Exception &e)
     {
