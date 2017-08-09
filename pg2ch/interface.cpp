@@ -55,6 +55,8 @@ extern "C" void TestConnection() {}
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
+class Client;
+
 //
 
 static void doInsert(DB::ASTInsertQuery *query)
@@ -102,6 +104,10 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         {
             DB::IAST::FormatSettings settings(std::cout, true, false);
             res->format(settings);
+        }
+
+        {
+            Client c();
         }
 
         static DB::Context context = DB::Context::createGlobal();
