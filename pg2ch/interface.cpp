@@ -101,7 +101,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
         {
             DB::IAST::FormatSettings settings(std::cout, true, false);
-            res.format(settings);
+            res->format(settings);
         }
 
         static DB::Context context = DB::Context::createGlobal();
