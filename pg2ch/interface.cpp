@@ -89,6 +89,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             UInt64 server_version_minor = 0;
             UInt64 server_revision = 0;
 
+            std::cout << "starting to use connection";
             connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
 
             std::cout << "Connected to " << server_name
