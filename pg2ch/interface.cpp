@@ -57,7 +57,7 @@ using ASTPtr = std::shared_ptr<DB::IAST>;
 
 namespace DB
 {
-extern class Client;
+ class Client{public:void init(int argc, char** argv);};
 }
 
 //
