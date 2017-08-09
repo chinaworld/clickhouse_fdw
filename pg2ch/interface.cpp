@@ -83,7 +83,20 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                                                            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
-        connection->connect();
+        {
+            String server_name;
+            UInt64 server_version_major = 0;
+            UInt64 server_version_minor = 0;
+            UInt64 server_revision = 0;
+
+            connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
+
+            std::cout << "Connected to " << server_name
+                << " server version " << server_version_major
+                << "." << server_version_minor
+                << "." << server_revision
+                << "." << std::endl << std::endl;
+        }
         /*String query_without_data = insert->data
                                         ? query.substr(0, parsed_insert_query.data - query.data())
                                         : query;*/
