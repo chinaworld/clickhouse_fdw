@@ -57,6 +57,10 @@ using ASTPtr = std::shared_ptr<DB::IAST>;
 
 //static DB::Context context = DB::Context::createGlobal();
 
+static void doInsert(DB::ASTInsertQuery *query)
+{
+}
+
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     try
@@ -73,7 +77,8 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
         DB::ASTInsertQuery *insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
-        
+        doInsert(insert);
+
         auto connection = std::make_unique<DB::Connection>("localhost", DBMS_DEFAULT_PORT, "", "", "", "client", DB::Protocol::Compression::Enable,
                                                            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
@@ -84,7 +89,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             UInt64 server_version_minor = 0;
             UInt64 server_revision = 0;
 
-            std::cout << "starting to use connection";
+            std::cout << "Connecting to ";
             connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
 
             std::cout << "Connected to " << server_name
