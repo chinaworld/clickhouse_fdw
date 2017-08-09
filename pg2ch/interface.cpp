@@ -108,6 +108,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
         {
             Client c();
+            c.init(1,{cstrQuery});
         }
 
         static DB::Context context = DB::Context::createGlobal();
