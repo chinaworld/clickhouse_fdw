@@ -91,7 +91,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         //if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
         //    throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
 
-        connection->sendQuery(query, "", DB::QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
+        //connection->sendQuery(query, "", DB::QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
     }
     catch (const Poco::Exception &e)
     {
