@@ -100,7 +100,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         }
 
         {
-            IAST::FormatSettings settings(std::cout, true, false);
+            DB::IAST::FormatSettings settings(std::cout, true, false);
             insert->format(settings);
         }
 
