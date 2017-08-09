@@ -107,7 +107,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         }
 
         {
-            Client c();
+            DB::Client c;
             c.init(1,{cstrQuery});
         }
 
