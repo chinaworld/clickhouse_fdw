@@ -73,8 +73,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
 
         DB::ASTInsertQuery *insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
-        doInsert(insert);
-
+        
         auto connection = std::make_unique<DB::Connection>("localhost", DBMS_DEFAULT_PORT, "", "", "", "client", DB::Protocol::Compression::Enable,
                                                            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
