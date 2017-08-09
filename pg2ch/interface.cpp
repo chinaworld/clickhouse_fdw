@@ -55,10 +55,8 @@ extern "C" void TestConnection() {}
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
-namespace DB
-{
 class Client;
-}
+
 
 //
 
@@ -112,7 +110,14 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
         {
             DB::Client c;
-            c.init(1, {cstrQuery});
+            std::vector<std::string> arguments = {cstrQuery, "/some_path"};
+
+            std::vector<char *> argv;
+            for (const auto &arg : arguments)
+                argv.push_back((char *)arg.data());
+            argv.push_back(nullptr);
+
+            c.init(argv.size() - 1, argv.data());
         }
 
         static DB::Context context = DB::Context::createGlobal();
