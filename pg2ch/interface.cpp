@@ -83,7 +83,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                                                            Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
                                                            Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
-        connection->forceConnected();
+        connection->connect();
         /*String query_without_data = insert->data
                                         ? query.substr(0, parsed_insert_query.data - query.data())
                                         : query;*/
