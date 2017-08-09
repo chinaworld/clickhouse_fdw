@@ -99,6 +99,11 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                 << "." << std::endl << std::endl;
         }
 
+        {
+            IAST::FormatSettings settings(std::cout, true, false);
+            insert->format(settings);
+        }
+
         static DB::Context context = DB::Context::createGlobal();
         /*String query_without_data = insert->data
                                         ? query.substr(0, parsed_insert_query.data - query.data())
