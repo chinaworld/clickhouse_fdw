@@ -55,7 +55,7 @@ extern "C" void TestConnection() {}
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
-class Client;
+class DB::Client;
 
 //
 
