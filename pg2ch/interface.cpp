@@ -55,7 +55,10 @@ extern "C" void TestConnection() {}
 class IAST;
 using ASTPtr = std::shared_ptr<DB::IAST>;
 
-class DB::Client;
+namespace DB
+{
+class Client;
+}
 
 //
 
@@ -95,10 +98,11 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
 
             std::cout << "Connected to " << server_name
-                << " server version " << server_version_major
-                << "." << server_version_minor
-                << "." << server_revision
-                << "." << std::endl << std::endl;
+                      << " server version " << server_version_major
+                      << "." << server_version_minor
+                      << "." << server_revision
+                      << "." << std::endl
+                      << std::endl;
         }
 
         {
@@ -108,7 +112,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
         {
             DB::Client c;
-            c.init(1,{cstrQuery});
+            c.init(1, {cstrQuery});
         }
 
         static DB::Context context = DB::Context::createGlobal();
