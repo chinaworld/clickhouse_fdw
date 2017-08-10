@@ -61,9 +61,9 @@ extern void mainEntryClickHouseClient(int argc, char** argv);
 
 //
 
-static void doInsert(DB::ASTInsertQuery *query)
-{
-}
+// static void doInsert(DB::ASTInsertQuery *query)
+// {
+// }
 
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
