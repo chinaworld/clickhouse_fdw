@@ -110,7 +110,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         }
 
         {
-            std::vector<std::string> arguments = {"","--client","--query",cstrQuery};
+            std::vector<std::string> arguments = {"","--query",cstrQuery};
 
             std::vector<char *> argv;
             for (const auto &arg : arguments)
