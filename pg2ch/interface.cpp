@@ -112,7 +112,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
         {
             DB::Client c;
-            std::vector<std::string> arguments = {cstrQuery, "/some_path"};
+            std::vector<std::string> arguments = {"","--client","--query",cstrQuery};
 
             std::vector<char *> argv;
             for (const auto &arg : arguments)
