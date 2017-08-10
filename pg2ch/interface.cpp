@@ -69,6 +69,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     try
     {
+        /*
         String query(cstrQuery);
         const char *begin = query.data();
         const char *end = begin + query.size();
@@ -108,7 +109,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             DB::IAST::FormatSettings settings(std::cout, true, false);
             res->format(settings);
         }
-
+        */
         {
             std::vector<std::string> arguments = {"","--query",cstrQuery};
 
@@ -128,7 +129,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
         //if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
         //    throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
 
-        connection->sendQuery(query, "", DB::QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
+        //connection->sendQuery(query, "", DB::QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
     }
     catch (const Poco::Exception &e)
     {
