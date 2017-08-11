@@ -217,7 +217,7 @@ clickhouse_fdw_handler(PG_FUNCTION_ARGS)
 {
 	FdwRoutine *fdwroutine = makeNode(FdwRoutine);
 	TestConnection();
-	ExecuteCHQuery("insert into x values (123)");
+	ExecuteCHQuery("insert into x values (124)");
 
 	elog(DEBUG1, "entering function %s", __func__);
 
