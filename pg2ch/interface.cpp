@@ -1,8 +1,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <signal.h>
 
+#include <signal.h>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -701,7 +701,7 @@ private:
         connection->sendQuery(query, "", QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
         sendExternalTables();
         receiveResult();
-    }§
+    }
 
 
     /// Process the query that requires transfering data blocks to the server.
