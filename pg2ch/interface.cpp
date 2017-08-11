@@ -1374,8 +1374,22 @@ public:
 
 }
 
+int mainEntryClickHouseClient(int argc, char ** argv)
+{
+    DB::Client client;
 
-extern void mainEntryClickHouseClient(int argc, char** argv);
+    try
+    {
+        client.init(argc, argv);
+    }
+    catch (const boost::program_options::error & e)
+    {
+        std::cerr << "Bad arguments: " << e.what() << std::endl;
+        return 1;
+    }
+
+    return client.run();
+}
 
 
 //
@@ -1440,7 +1454,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
             mainEntryClickHouseClient(argv.size() - 1, argv.data());
         }
 
-        static DB::Context context = DB::Context::createGlobal();
+        //static DB::Context context = DB::Context::createGlobal();
         /*String query_without_data = insert->data
                                         ? query.substr(0, parsed_insert_query.data - query.data())
                                         : query;*/
