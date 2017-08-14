@@ -1541,7 +1541,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         }
         out_buf.flush();
 
-    std::cout<<ctx->tupleValues[j] << " str"<<std::endl;
+    std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
 
 
     ctx->currentRow++;
