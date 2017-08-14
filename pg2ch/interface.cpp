@@ -1493,6 +1493,7 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
 
             auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
             ctx->blocks = (void*)blocks; 
+            ctx->blockRows = blocks[0].rows();
         }
 }
 
@@ -1509,10 +1510,11 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     if(ctx->currentBlock >= blcs.size())
         return 0;
 
-    if(ctx->currentRow >= blcs[ctx->currentBlock].rows()){
+    if(ctx->currentRow >= ctx->blockRows){
         std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
+        ctx->blockRows = blcs[ctx->currentBlock].rows();
     }
 
     if(ctx->currentBlock > blcs.size())

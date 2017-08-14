@@ -11,6 +11,7 @@ typedef struct CHReadCtx{
     int natts;
 
     uint32_t currentBlock;
+    uint32_t blockRows;
     uint32_t currentRow;
 } CHReadCtx;
 
