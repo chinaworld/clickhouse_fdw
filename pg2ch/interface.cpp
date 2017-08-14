@@ -1514,11 +1514,11 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
+
+        if(ctx->currentBlock > blcs.size())
+            return 0;
         ctx->blockRows = blcs[ctx->currentBlock].rows();
     }
-
-    if(ctx->currentBlock > blcs.size())
-        return 0;
 
     snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
