@@ -1534,7 +1534,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             ctx->tupleValues[j] = out_buf.position();
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
         }
-    std::cout<<str_stream.start();
+    std::cout<<str_stream.str();
 
     ctx->currentRow++;
     std::cout<<"next line"<< ctx->currentRow <<std::endl;
