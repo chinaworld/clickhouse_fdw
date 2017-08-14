@@ -1503,9 +1503,9 @@ extern "C" void end_ch_query(CHReadCtx *ctx){
 
 
 extern "C" int read_ch_query(CHReadCtx *ctx){
-    auto blcs = (std::vector<DB::Block>*)ctx->blocks;
+    std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
 
-    if(ctx->currentBlock > blcs->size())
+    if(ctx->currentBlock > blcs.size())
         return 0;
 
     if(ctx->currentRow > blcs[ctx->currentBlock].rows()){
