@@ -1515,7 +1515,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
 
-        if(ctx->currentBlock > blcs.size())
+        if(ctx->currentBlock >= blcs.size())
             return 0;
         ctx->blockRows = blcs[ctx->currentBlock].rows();
     }
