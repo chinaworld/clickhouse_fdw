@@ -1475,7 +1475,7 @@ extern void ExecuteCHQuery(char *cstrQuery)
     }
 }
 
-void "C" begin_ch_query(CHReadCtx *ctx){
+extern "C" void begin_ch_query(CHReadCtx *ctx){
         {
             std::vector<std::string> arguments = {"","--query",ctx->sql};
 
@@ -1488,6 +1488,6 @@ void "C" begin_ch_query(CHReadCtx *ctx){
         }
 }
 
-void "C" end_ch_query(CHReadCtx *ctx){
+extern "C" void end_ch_query(CHReadCtx *ctx){
 
 }
