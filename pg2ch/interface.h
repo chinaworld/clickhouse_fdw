@@ -6,6 +6,7 @@
 
 typedef struct CHReadCtx{
     char* sql;
+    void* blocks;
 } CHReadCtx;
 
 #ifdef INTERFACE_C_LINKAGE

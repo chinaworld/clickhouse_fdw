@@ -89,6 +89,7 @@ class Client : public Poco::Util::Application
 {
 public:
     Client() {}
+    std::vector<Block> *blocks;
 
 private:
     using StringSet = std::unordered_set<String>;
@@ -991,10 +992,11 @@ private:
 
     void onData(Block & block)
     {        
-        std::cout << "onData";
-        std::cout.flush();
         if (written_progress_chars)
             clearProgress();
+
+        if(blocks)
+            blocks->emplace_back(block);
 
         if (!block)
             return;
@@ -1379,9 +1381,10 @@ public:
 
 }
 
-int mainEntryClickHouseClient(int argc, char ** argv)
+std::vector<Block>* mainEntryClickHouseClient(int argc, char ** argv)
 {
     DB::Client client;
+    client.blocks = new std::vector<Block>{};
 
     try
     {
@@ -1393,7 +1396,8 @@ int mainEntryClickHouseClient(int argc, char ** argv)
         return 1;
     }
 
-    return client.run();
+    client.run();
+    return client.blocks;
 }
 
 
@@ -1487,7 +1491,8 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
                 argv.push_back((char *)arg.data());
             argv.push_back(nullptr);
 
-            mainEntryClickHouseClient(argv.size() - 1, argv.data());
+            auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
+            ctx->blocks = (void*)blocks; 
         }
 }
 
