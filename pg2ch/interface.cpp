@@ -992,6 +992,7 @@ private:
     void onData(Block & block)
     {        
         std::cout << "onData";
+        std::cout.flush();
         if (written_progress_chars)
             clearProgress();
 
