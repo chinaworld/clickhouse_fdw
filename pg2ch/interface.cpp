@@ -1493,7 +1493,7 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
 
             auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
             ctx->blocks = (void*)blocks; 
-            ctx->blockRows = blocks[0].rows();
+            ctx->blockRows = (*blocks)[0].rows();
         }
 }
 
