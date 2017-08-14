@@ -1241,6 +1241,7 @@ ch_execute(PG_FUNCTION_ARGS)
     TupleDesc            tupdesc;
     AttInMetadata       *attinmeta;
 	char				*sql;
+	CHReadCtx			*userCtx;
 
      /* stuff done only on the first call of the function */
      if (SRF_IS_FIRSTCALL())
@@ -1256,7 +1257,13 @@ ch_execute(PG_FUNCTION_ARGS)
         /* total number of tuples to be returned */
         funcctx->max_calls = 7;
 
+
 		sql = text_to_cstring(PG_GETARG_TEXT_PP(0));
+		userCtx = palloc0(sizeof(CHReadCtx));
+		funcctx->user_fctx = userCtx;
+		userCtx->sql = sql;
+
+		begin_ch_query(userCtx);
 
         /* Build a tuple descriptor for our result type */
         if (get_call_result_type(fcinfo, NULL, &tupdesc) != TYPEFUNC_COMPOSITE)
@@ -1312,6 +1319,7 @@ ch_execute(PG_FUNCTION_ARGS)
     }
     else    /* do when there is no more left */
     {
+		end_ch_query((CHReadCtx*)funcctx->user_fctx);
         SRF_RETURN_DONE(funcctx);
     }
 }

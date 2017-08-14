@@ -1472,3 +1472,20 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                   << std::endl;
     }
 }
+
+void begin_ch_query(CHReadCtx *ctx){
+        {
+            std::vector<std::string> arguments = {"","--query",ctx->sql};
+
+            std::vector<char *> argv;
+            for (const auto &arg : arguments)
+                argv.push_back((char *)arg.data());
+            argv.push_back(nullptr);
+
+            mainEntryClickHouseClient(argv.size() - 1, argv.data());
+        }
+}
+
+void end_ch_query(CHReadCtx *ctx){
+
+}
