@@ -11,6 +11,6 @@ typedef struct CHReadCtx{
 } CHReadCtx;
 
 
-extern void begin_ch_query(CHReadCtx *ctx);
+extern "C" void begin_ch_query(CHReadCtx *ctx);
 
-extern void end_ch_query(CHReadCtx *ctx);
+extern "C" void end_ch_query(CHReadCtx *ctx);
