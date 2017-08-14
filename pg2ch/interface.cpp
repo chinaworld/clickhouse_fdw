@@ -1505,15 +1505,16 @@ extern "C" void end_ch_query(CHReadCtx *ctx){
 extern "C" int read_ch_query(CHReadCtx *ctx){
     std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
 
+//todo: make block advancement repliable to zero length blocks
     if(ctx->currentBlock > blcs.size())
         return 0;
 
     if(ctx->currentRow > blcs[ctx->currentBlock].rows()){
-        ++ctx->curentBlock;
+        ++(ctx->curentBlock);
         ctx->currentRow = 0;
     }
 
-    if(ctx->currentBlock > blcs[ctx->currentBlock].size())
+    if(ctx->currentBlock > blcs.size())
         return 0;
 
     snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
