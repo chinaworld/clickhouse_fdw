@@ -1505,15 +1505,15 @@ extern "C" void end_ch_query(CHReadCtx *ctx){
 extern "C" int read_ch_query(CHReadCtx *ctx){
     auto blcs = (std::vector<DB::Block>*)ctx->blocks;
 
-    if(ctx->curentBlock > blcs.size())
+    if(ctx->currentBlock > blcs->size())
         return 0;
 
-    if(ctx->currentRow > blcs[ctx->curentBlock].rows()){
+    if(ctx->currentRow > blcs[ctx->currentBlock].rows()){
         ++ctx->curentBlock;
         ctx->currentRow = 0;
     }
 
-    if(ctx->curentBlock > blcs.size())
+    if(ctx->currentBlock > blcs.size())
         return 0;
 
     snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
