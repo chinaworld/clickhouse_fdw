@@ -1281,6 +1281,7 @@ ch_execute(PG_FUNCTION_ARGS)
 		userCtx->sql = sql;
 		userCtx->natts = tupdesc->natts;
 		userCtx->tupleValues = palloc(sizeof(char*) * tupdesc->natts);
+		userCtx->tupleValues[0] = palloc(16);
 
 		begin_ch_query(userCtx);
 
