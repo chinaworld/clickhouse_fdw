@@ -49,6 +49,8 @@
 #include <Functions/registerFunctions.h>
 #include <AggregateFunctions/registerAggregateFunctions.h>
 
+#include "interface.h"
+
 
 /// http://en.wikipedia.org/wiki/ANSI_escape_code
 
