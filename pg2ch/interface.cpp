@@ -1506,7 +1506,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
 
 //todo: make block advancement repliable to zero length blocks
-    if(ctx->currentBlock > blcs.size())
+    if(ctx->currentBlock >= blcs.size())
         return 0;
 
     if(ctx->currentRow >= blcs[ctx->currentBlock].rows()){
