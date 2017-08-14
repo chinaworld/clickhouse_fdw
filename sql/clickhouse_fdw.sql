@@ -33,3 +33,8 @@ CREATE OR REPLACE FUNCTION retcomposite(IN integer, IN integer,
     RETURNS SETOF record
     AS 'MODULE_PATHNAME', 'retcomposite'
     LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION ch_execute(text)
+    RETURNS SETOF record
+    AS 'MODULE_PATHNAME', 'ch_execute'
+    LANGUAGE C IMMUTABLE STRICT;
