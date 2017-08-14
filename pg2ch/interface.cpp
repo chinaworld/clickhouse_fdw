@@ -1509,7 +1509,8 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     if(ctx->currentBlock > blcs.size())
         return 0;
 
-    if(ctx->currentRow > blcs[ctx->currentBlock].rows()){
+    if(ctx->currentRow >= blcs[ctx->currentBlock].rows()){
+        //std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
     }
@@ -1518,6 +1519,8 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         return 0;
 
     snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
+
+    ctx->currentRow++;
     
     return 1;
 }
