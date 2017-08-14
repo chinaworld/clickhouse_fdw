@@ -1537,7 +1537,10 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     std::cout<<str_stream.str();
 
     char*cleaner = ctx->tupleValues[0];
-    while(cleaner <= out_buf.position()){
+    while(cleaner < out_buf.position()){
+
+        std::cout<< (int) (*cleaner);
+
         if(*cleaner == '\n' || *cleaner == '\r')
             *cleaner = 0;
 
