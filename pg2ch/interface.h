@@ -10,8 +10,8 @@ typedef struct CHReadCtx{
     char** tupleValues;
     int natts;
 
-    int currentBlock;
-    int currentRow;
+    uint32_t currentBlock;
+    uint32_t currentRow;
 } CHReadCtx;
 
 #ifdef INTERFACE_C_LINKAGE
