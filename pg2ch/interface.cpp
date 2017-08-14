@@ -1524,11 +1524,10 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     std::stringstream str_stream;
     DB::WriteBufferFromOStream out_buf(str_stream);
+
     for (size_t j = 0; j < ctx->natts; ++j)
         {
             auto & col = blcs[ctx->currentBlock].getByPosition(j);
-            auto actualColum = *col.column.get();
-            auto colType = *col.type.get();
 
 
             ctx->tupleValues[j] = wb.position();
