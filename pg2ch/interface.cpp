@@ -1536,6 +1536,12 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         }
     std::cout<<str_stream.str();
 
+    for(size_t i = 0; i < str_stream.size();i++){
+        if(ctx->tupleValues[0][i] == '\n' ||ctx->tupleValues[0][i] == '\r')
+            ctx->tupleValues[0][i] = 0;
+    }
+
+
     ctx->currentRow++;
     std::cout<<"next line"<< ctx->currentRow <<std::endl;
     
