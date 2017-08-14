@@ -22,6 +22,7 @@
 #include "optimizer/pathnode.h"
 #include "optimizer/planmain.h"
 #include "optimizer/restrictinfo.h"
+#include "funcapi.h"
 #include "../pg2ch/interface.h"
 
 PG_MODULE_MAGIC;
