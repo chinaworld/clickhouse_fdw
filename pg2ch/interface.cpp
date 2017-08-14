@@ -1522,7 +1522,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    WriteBuffer wb;
+    DB::WriteBuffer wb;
     for (size_t j = 0; j < ctx->natts; ++j)
         {
             auto & col = blcs[ctx->currentBlock].getByPosition(j);
