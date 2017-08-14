@@ -49,6 +49,7 @@
 #include <Functions/registerFunctions.h>
 #include <AggregateFunctions/registerAggregateFunctions.h>
 
+#define INTERFACE_C_LINKAGE
 #include "interface.h"
 
 
@@ -1400,7 +1401,7 @@ int mainEntryClickHouseClient(int argc, char ** argv)
 // {
 // }
 
-extern void ExecuteCHQuery(char *cstrQuery)
+extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     try
     {
