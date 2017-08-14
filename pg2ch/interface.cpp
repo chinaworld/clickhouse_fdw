@@ -1381,10 +1381,10 @@ public:
 
 }
 
-std::vector<Block>* mainEntryClickHouseClient(int argc, char ** argv)
+std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv)
 {
     DB::Client client;
-    client.blocks = new std::vector<Block>{};
+    client.blocks = new std::vector<DB::Block>{};
 
     try
     {
