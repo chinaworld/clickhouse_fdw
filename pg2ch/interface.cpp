@@ -1520,7 +1520,19 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         ctx->blockRows = blcs[ctx->currentBlock].rows();
     }
 
-    snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
+    //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
+
+    WriteBuffer wb;
+    for (size_t j = 0; j < ctx->natts; ++j)
+        {
+            auto & col = blcs[ctx->currentBlock].getByPosition(j);
+            auto actualColum = *col.column.get();
+            auto colType = *col.type.get();
+
+
+            ctx->tupleValues[j] = wb.position();
+            (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, wb)
+        }
 
     ctx->currentRow++;
     std::cout<<"next line"<< ctx->currentRow <<std::endl;
