@@ -1510,7 +1510,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         return 0;
 
     if(ctx->currentRow > blcs[ctx->currentBlock].rows()){
-        ++(ctx->curentBlock);
+        ++(ctx->currentBlock);
         ctx->currentRow = 0;
     }
 
