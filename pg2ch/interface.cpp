@@ -1539,6 +1539,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             *out_buf.position() = 0;
             out_buf.position()++;
         }
+        out_buf.flush();
 
 
     ctx->currentRow++;
