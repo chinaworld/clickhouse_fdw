@@ -1497,5 +1497,6 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
 }
 
 extern "C" void end_ch_query(CHReadCtx *ctx){
-
+    auto blcs = (std::vector<DB::Block>*)ctx->blocks;
+    delete blcs;
 }
