@@ -984,6 +984,7 @@ private:
                 current_format = "Vertical";
 
             block_out_stream = context.getOutputFormat(current_format, *out_buf, block);
+            block_out_stream = context.shared->format_factory.getOutput(name, buf, sample, context);
             block_out_stream->writePrefix();
         }
     }
