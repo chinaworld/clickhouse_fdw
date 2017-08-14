@@ -1393,7 +1393,7 @@ std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv)
     catch (const boost::program_options::error & e)
     {
         std::cerr << "Bad arguments: " << e.what() << std::endl;
-        return 1;
+        return nullptr;
     }
 
     client.run();
