@@ -983,15 +983,15 @@ private:
             if (has_vertical_output_suffix)
                 current_format = "Vertical";
 
-            block_out_stream = context.getOutputFormat(current_format, *out_buf, block);
-            block_out_stream = context.shared->format_factory.getOutput(current_format, *out_buf, block, context);
+            block_out_stream = context.getOutputFormat("TabSeparated", *out_buf, block);
             block_out_stream->writePrefix();
         }
     }
 
 
     void onData(Block & block)
-    {
+    {        
+        std::cout << "onData";
         if (written_progress_chars)
             clearProgress();
 
