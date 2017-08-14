@@ -1275,12 +1275,12 @@ ch_execute(PG_FUNCTION_ARGS)
         funcctx->attinmeta = attinmeta;
 
 
-		sql = text_to_cstring(PG_GETARG_TEXT_PP(0));
+		sql = (char*) text_to_cstring(PG_GETARG_TEXT_PP(0));
 		userCtx = palloc0(sizeof(CHReadCtx));
 		funcctx->user_fctx = userCtx;
 		userCtx->sql = sql;
 		userCtx->natts = tupdesc->natts;
-		userCtx->tupleValues = palloc(sizeof(char*)tupledesc->natts);
+		userCtx->tupleValues = palloc(sizeof(char*) * tupledesc->natts);
 
 		begin_ch_query(userCtx);
 
