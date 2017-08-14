@@ -1400,7 +1400,7 @@ int mainEntryClickHouseClient(int argc, char ** argv)
 // {
 // }
 
-extern "C" void ExecuteCHQuery(char *cstrQuery)
+extern void ExecuteCHQuery(char *cstrQuery)
 {
     try
     {
