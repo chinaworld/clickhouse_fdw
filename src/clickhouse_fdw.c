@@ -1328,6 +1328,7 @@ ch_execute(PG_FUNCTION_ARGS)
     }
     else    /* do when there is no more left */
     {
+		elog(NOTICE,"finishing");
 		end_ch_query((CHReadCtx*)funcctx->user_fctx);
         SRF_RETURN_DONE(funcctx);
     }
