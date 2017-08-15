@@ -1526,8 +1526,8 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    std::stringstream& str_stream = *(new std::stringstream{});
-    DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
+    //std::stringstream& str_stream = *(new std::stringstream{});
+    //DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
 
     /*for (size_t j = 0; j < ctx->natts; ++j)
         {
@@ -1540,7 +1540,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             out_buf.position()++;
             out_buf.next();
         }*/
-    ctx->tupleValues[0] = "0";
+    ctx->tupleValues[0] = (char*)"0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
     //std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
