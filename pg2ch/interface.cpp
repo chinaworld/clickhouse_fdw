@@ -1526,16 +1526,18 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    //std::stringstream& str_stream = *(new std::stringstream{});
-    //DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
+    std::stringstream& str_stream = *(new std::stringstream{});
+    DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
 
     for (size_t j = 0; j < ctx->natts; ++j)
         {
-            //auto & col = 
+            auto & col = 
             blcs[ctx->currentBlock].getByPosition(j);
 
             //ctx->tupleValues[j] = out_buf.position();
-            //(*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
+        std::cout<<"serilalize begin" << std::endl;
+            (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
+        std::cout<<"serialize end" << std::endl;
 
             //*out_buf.position() = 0;
             //out_buf.position()++;
@@ -1548,7 +1550,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
 
     ctx->currentRow++;
-    std::cout<<"end of read call";
+    std::cout<<"end of read call" << std::endl;
     
     return 1;
 }
