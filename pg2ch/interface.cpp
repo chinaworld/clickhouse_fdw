@@ -1535,7 +1535,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             blcs[ctx->currentBlock].getByPosition(j);
 
             //ctx->tupleValues[j] = out_buf.position();
-        std::cout<<"serilalize begin" << std::endl;
+        std::cout<<"serilalize begin: currentRow "<< ctx->currentRow << " block rows "<< blcs[ctx->currentBlock].rows() << std::endl;
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
         std::cout<<"serialize end" << std::endl;
 
