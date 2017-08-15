@@ -1534,16 +1534,16 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             auto & col = 
             blcs[ctx->currentBlock].getByPosition(j);
 
-            //ctx->tupleValues[j] = out_buf.position();
+            ctx->tupleValues[j] = out_buf.position();
         std::cout<<"serilalize begin: currentRow "<< ctx->currentRow << " block rows "<< blcs[ctx->currentBlock].rows() << std::endl;
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
         std::cout<<"serialize end" << std::endl;
 
-            //*out_buf.position() = 0;
-            //out_buf.position()++;
+            *out_buf.position() = 0;
+            out_buf.position()++;
             //out_buf.next();
         }
-    ctx->tupleValues[0] = (char*)"0";
+    //ctx->tupleValues[0] = (char*)"0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
     //std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
