@@ -1312,8 +1312,8 @@ ch_execute(PG_FUNCTION_ARGS)
         //snprintf(values[0], 16, "%d", 123);
 
         /* build a tuple */
-		elog(NOTICE,"building tuple");
-		elog(NOTICE,"%s",((CHReadCtx*)funcctx->user_fctx)->tupleValues[0]);
+		//elog(NOTICE,"building tuple");
+		//elog(NOTICE,"%s",((CHReadCtx*)funcctx->user_fctx)->tupleValues[0]);
 
         tuple = BuildTupleFromCStrings(attinmeta, ((CHReadCtx*)funcctx->user_fctx)->tupleValues);
 

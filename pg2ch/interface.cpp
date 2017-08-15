@@ -1515,7 +1515,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         return 0;
 
     if(ctx->currentRow >= ctx->blockRows){
-        std::cout<<"next block"<<std::endl;
+        //std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
 
@@ -1541,12 +1541,12 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             out_buf.next();
         }
 
-    std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
-    std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
+    //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
+    //std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
 
 
     ctx->currentRow++;
-    std::cout<<"next line"<< ctx->currentRow <<std::endl;
+    //std::cout<<"next line"<< ctx->currentRow <<std::endl;
     
     return 1;
 }
