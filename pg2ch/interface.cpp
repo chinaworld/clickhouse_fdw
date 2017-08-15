@@ -1546,7 +1546,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
 
     ctx->currentRow++;
-    //std::cout<<"next line"<< ctx->currentRow <<std::endl;
+    std::cout<<"end of read call";
     
     return 1;
 }
