@@ -1526,15 +1526,16 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    std::stringstream& str_stream = *(new std::stringstream{});
-    DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
+    //std::stringstream& str_stream = *(new std::stringstream{});
+    //DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
 
     for (size_t j = 0; j < ctx->natts; ++j)
         {
-            auto & col = blcs[ctx->currentBlock].getByPosition(j);
+            //auto & col = 
+            blcs[ctx->currentBlock].getByPosition(j);
 
             //ctx->tupleValues[j] = out_buf.position();
-            (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
+            //(*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
 
             //*out_buf.position() = 0;
             //out_buf.position()++;
