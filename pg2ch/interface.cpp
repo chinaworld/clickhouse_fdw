@@ -1497,7 +1497,8 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
             auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
             ctx->blocks = (void*) blocks; 
             ctx->blockRows = (*blocks)[0].rows();
-            ctx->streamPtr = (void*) new std::stringstream{};
+            auto str_stream = new std::stringstream{};
+            ctx->streamPtr = (void*) str_stream;
             ctx->writeBufferPtr = (void*) new DB::WriteBufferFromOStream(str_stream);
         }
 }
