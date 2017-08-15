@@ -1539,7 +1539,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         }
 
     std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
-    std::cout<< std::hex <<ctx->(uint64_t)tupleValues[0] << " ptr"<<std::endl;
+    std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
 
 
     ctx->currentRow++;
