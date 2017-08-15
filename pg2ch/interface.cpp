@@ -1533,11 +1533,11 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
         {
             auto & col = blcs[ctx->currentBlock].getByPosition(j);
 
-            ctx->tupleValues[j] = out_buf.position();
+            //ctx->tupleValues[j] = out_buf.position();
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
 
-            *out_buf.position() = 0;
-            out_buf.position()++;
+            //*out_buf.position() = 0;
+            //out_buf.position()++;
             //out_buf.next();
         }
     ctx->tupleValues[0] = (char*)"0";
