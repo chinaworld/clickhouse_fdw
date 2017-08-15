@@ -997,7 +997,10 @@ private:
             clearProgress();
 
         if(blocks)
-            blocks->emplace_back(block);
+            {
+                blocks->emplace_back(block);
+                return;
+            }
 
         if (!block)
             return;
@@ -1527,7 +1530,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
     std::stringstream& str_stream = *(new std::stringstream{});
-    DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
+    DB::WriteBufferFromOStream out_buf(str_stream);
 
     for (size_t j = 0; j < ctx->natts; ++j)
         {
