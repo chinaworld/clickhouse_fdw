@@ -1499,7 +1499,7 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
             ctx->blockRows = (*blocks)[0].rows();
             std::stringstream* str_stream = new std::stringstream{};
             ctx->streamPtr = (void*) str_stream;
-            ctx->writeBufferPtr = (void*) new DB::WriteBufferFromOStream(str_stream);
+            ctx->writeBufferPtr = (void*) new DB::WriteBufferFromOStream(*str_stream);
         }
 }
 
