@@ -999,7 +999,6 @@ private:
         if(blocks)
             {
                 blocks->emplace_back(block);
-                return;
             }
 
         if (!block)
