@@ -1514,7 +1514,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     if(ctx->currentBlock >= blcs.size())
         return 0;
 
-    if(ctx->currentRow >= ctx->blockRows){
+    while(ctx->currentRow >= ctx->blockRows){
         //std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
