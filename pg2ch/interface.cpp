@@ -1507,6 +1507,7 @@ extern "C" void end_ch_query(CHReadCtx *ctx){
 
 
 extern "C" int read_ch_query(CHReadCtx *ctx){
+    std::cout<<"read call"<< ctx->currentRow <<std::endl;
     std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
 
 //todo: make block advancement repliable to zero length blocks
