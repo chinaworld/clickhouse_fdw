@@ -1529,9 +1529,9 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
     std::stringstream& str_stream = *(new std::stringstream{});
     DB::WriteBufferFromOStream& out_buf = *(new DB::WriteBufferFromOStream(str_stream));
 
-    for (size_t j = 0; j < ctx->natts; ++j)
+    /*for (size_t j = 0; j < ctx->natts; ++j)
         {
-            auto & col = ctx->blockRows.getByPosition(j);
+            auto & col = blcs[ctx->currentBlock].getByPosition(j);
 
             ctx->tupleValues[j] = out_buf.position();
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
@@ -1539,7 +1539,8 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             *out_buf.position() = 0;
             out_buf.position()++;
             out_buf.next();
-        }
+        }*/
+    ctx->tupleValues[0] = "0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
     //std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
