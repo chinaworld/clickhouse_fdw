@@ -1500,14 +1500,14 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
 
 extern "C" void end_ch_query(CHReadCtx *ctx){
 
-    std::cout<<"end call"<< ctx->currentRow <<std::endl;
+    //std::cout<<"end call"<< ctx->currentRow <<std::endl;
     auto blcs = (std::vector<DB::Block>*)ctx->blocks;
     delete blcs;
 }
 
 
 extern "C" int read_ch_query(CHReadCtx *ctx){
-    std::cout<<"read call"<< ctx->currentRow <<std::endl;
+    //std::cout<<"read call"<< ctx->currentRow <<std::endl;
     std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
 
 //todo: make block advancement repliable to zero length blocks
@@ -1535,9 +1535,9 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
             blcs[ctx->currentBlock].getByPosition(j);
 
             ctx->tupleValues[j] = out_buf.position();
-        std::cout<<"serilalize begin: currentRow "<< ctx->currentRow << " block rows "<< blcs[ctx->currentBlock].rows() << std::endl;
+        //std::cout<<"serilalize begin: currentRow "<< ctx->currentRow << " block rows "<< blcs[ctx->currentBlock].rows() << std::endl;
             (*col.type.get()).serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
-        std::cout<<"serialize end" << std::endl;
+        //std::cout<<"serialize end" << std::endl;
 
             *out_buf.position() = 0;
             out_buf.position()++;
@@ -1550,7 +1550,7 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
 
     ctx->currentRow++;
-    std::cout<<"end of read call" << std::endl;
+    //std::cout<<"end of read call" << std::endl;
     
     return 1;
 }
