@@ -985,7 +985,7 @@ private:
             if (has_vertical_output_suffix)
                 current_format = "Vertical";
 
-            block_out_stream = context.getOutputFormat("TabSeparated", *out_buf, block);
+            block_out_stream = context.getOutputFormat("Null", *out_buf, block);
             block_out_stream->writePrefix();
         }
     }
@@ -996,13 +996,13 @@ private:
         if (written_progress_chars)
             clearProgress();
 
+        if (!block)
+            return;
+
         if(blocks)
             {
                 blocks->emplace_back(block);
             }
-
-        if (!block)
-            return;
 
         processed_rows += block.rows();
         initBlockOutputStream(block);
