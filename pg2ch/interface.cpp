@@ -1495,8 +1495,10 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
             argv.push_back(nullptr);
 
             auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
-            ctx->blocks = (void*)blocks; 
+            ctx->blocks = (void*) blocks; 
             ctx->blockRows = (*blocks)[0].rows();
+            ctx->streamPtr = (void*) new std::stringstream{};
+            ctx->writeBufferPtr = (void*) new DB::WriteBufferFromOStream(str_stream);
         }
 }
 
@@ -1528,8 +1530,10 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    std::stringstream& str_stream = *(new std::stringstream{});
-    DB::WriteBufferFromOStream out_buf (str_stream);
+    std::stringstream& str_stream = *((std::stringstream)ctx->streamPtr);
+    str_stream.seekg(0);
+    str_stream.seekp(0);
+    DB::WriteBufferFromOStream& out_buf = *((DB::WriteBufferFromOStream)ctx->writeBufferPtr);
 
     for (size_t j = 0; j < ctx->natts; ++j)
         {

@@ -7,6 +7,8 @@
 typedef struct CHReadCtx{
     char* sql;
     void* blocks;
+    void* streamPtr;
+    void* writeBufferPtr;
     char** tupleValues;
     size_t natts;
 
