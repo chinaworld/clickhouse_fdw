@@ -13,6 +13,7 @@ typedef struct CHReadCtx{
     uint32_t currentBlock;
     uint32_t blockRows;
     uint32_t currentRow;
+    char *password;
 } CHReadCtx;
 
 #ifdef INTERFACE_C_LINKAGE

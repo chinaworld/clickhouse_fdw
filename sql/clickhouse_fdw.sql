@@ -34,7 +34,7 @@ CREATE OR REPLACE FUNCTION retcomposite(IN integer, IN integer,
     AS 'MODULE_PATHNAME', 'retcomposite'
     LANGUAGE C IMMUTABLE STRICT;
 
-CREATE OR REPLACE FUNCTION ch_execute(text)
+CREATE OR REPLACE FUNCTION ch_execute(text,text)
     RETURNS SETOF record
     AS 'MODULE_PATHNAME', 'ch_execute'
     LANGUAGE C IMMUTABLE STRICT;
