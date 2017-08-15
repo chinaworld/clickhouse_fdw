@@ -1531,10 +1531,10 @@ extern "C" int read_ch_query(CHReadCtx *ctx){
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    std::stringstream& str_stream = *((std::stringstream)ctx->streamPtr);
+    std::stringstream& str_stream = *((std::stringstream*)ctx->streamPtr);
     str_stream.seekg(0);
     str_stream.seekp(0);
-    DB::WriteBufferFromOStream& out_buf = *((DB::WriteBufferFromOStream)ctx->writeBufferPtr);
+    DB::WriteBufferFromOStream& out_buf = *((DB::WriteBufferFromOStream*)ctx->writeBufferPtr);
 
     for (size_t j = 0; j < ctx->natts; ++j)
         {
