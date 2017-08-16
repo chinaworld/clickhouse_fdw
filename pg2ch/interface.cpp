@@ -90,8 +90,10 @@ class Client : public Poco::Util::Application
 {
 public:
     Client() {
-        if(context == nullptr)
+        if(!context_is_initied){
             context = Context::createGlobal(); //todo: thread safe init
+            context_is_initied = true;
+        }
     }
     std::vector<Block> *blocks;
 
@@ -124,6 +126,7 @@ private:
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
+    static bool context_is_initied = false;
     static Context context;
 
     /// Buffer that reads from stdin in batch mode.
