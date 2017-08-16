@@ -1384,7 +1384,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 extern "C" void begin_ch_query(CHReadCtx *ctx)
 {
     {
-        std::vector<std::string> arguments = {"", "--query", ctx->sql, "--host", "olapdb-test02f.mail.yandex.net", "--user", "reader", "--password", ctx->password};
+        std::vector<std::string> arguments = {"", "--query", ctx->sql);//, "--host", "olapdb-test02f.mail.yandex.net", "--user", "reader", "--password", ctx->password};
 
         std::vector<char *> argv;
         for (const auto &arg : arguments)
@@ -1453,11 +1453,11 @@ extern "C" int read_ch_query(CHReadCtx *ctx)
         out_buf.position()++;
 
 
-            std::cout << ctx->tupleValues[j] << (int)(ctx->tupleValues[j] - ctx->tupleValues[0])<<'|';
+            //std::cout << ctx->tupleValues[j] << (int)(ctx->tupleValues[j] - ctx->tupleValues[0])<<'|';
         //out_buf.next();
     }
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
     //ctx->tupleValues[0] = (char*)"0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
