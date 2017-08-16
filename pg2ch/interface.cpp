@@ -196,7 +196,7 @@ private:
 #undef EXTRACT_SETTING
 
 #define EXTRACT_LIMIT(TYPE, NAME, DEFAULT) \
-        if (config().has(#NAME) && !context.>getSettingsRef().limits.NAME.changed) \
+        if (config().has(#NAME) && !context->getSettingsRef().limits.NAME.changed) \
             context->setSetting(#NAME, config().getString(#NAME));
         APPLY_FOR_LIMITS(EXTRACT_LIMIT)
 #undef EXTRACT_LIMIT
