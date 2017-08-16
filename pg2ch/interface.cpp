@@ -1368,7 +1368,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
                 argv.push_back((char *)arg.data());
             argv.push_back(nullptr);
 
-            mainEntryClickHouseClient(argv.size() - 1, argv.data(), strQuery);
+            mainEntryClickHouseClient(argv.size() - 1, argv.data(), cstrQuery);
         }
     }
     catch (const Poco::Exception &e)
