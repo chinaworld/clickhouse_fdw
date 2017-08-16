@@ -1385,7 +1385,7 @@ public:
             config().setBool("compression", options["compression"].as<bool>());
     }
 
-    void initStatic(char* sql)
+    void initWorker(char* sql)
     {
         config().setString("format", sql);
     }
