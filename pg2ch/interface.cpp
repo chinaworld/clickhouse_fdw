@@ -89,7 +89,10 @@ namespace ErrorCodes
 class Client : public Poco::Util::Application
 {
 public:
-    Client() {}
+    Client() {
+        if(!context)
+            context = Context::createGlobal(); //todo: thread safe init
+    }
     std::vector<Block> *blocks;
 
 private:
@@ -121,7 +124,7 @@ private:
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
-    static Context context = Context::createGlobal();
+    static Context context;
 
     /// Buffer that reads from stdin in batch mode.
     ReadBufferFromFileDescriptor std_in {STDIN_FILENO};
