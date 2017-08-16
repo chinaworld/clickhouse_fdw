@@ -1326,7 +1326,7 @@ class Client : public Poco::Util::Application
 
     void initWorker(char *sql)
     {
-        config().setString("format", sql);
+        config().setString("query", sql);
     }
 };
 }
