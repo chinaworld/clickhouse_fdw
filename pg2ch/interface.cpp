@@ -90,6 +90,8 @@ class Client : public Poco::Util::Application
 {
 public:
     Client() {
+    
+        static bool context_is_initied = false;
         if(!context_is_initied){
             context = Context::createGlobal(); //todo: thread safe init
             context_is_initied = true;
@@ -126,7 +128,6 @@ private:
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
-    static bool context_is_initied;
     static Context context;
 
     /// Buffer that reads from stdin in batch mode.
