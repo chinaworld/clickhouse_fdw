@@ -92,7 +92,7 @@ public:
     Client() {
     
         static context_instance = Context::createGlobal();
-        context = context_instance;
+        context = &context_instance;
     }
     std::vector<Block> *blocks;
 
@@ -125,7 +125,7 @@ private:
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
-    Context& context;
+    Context* context;
 
     /// Buffer that reads from stdin in batch mode.
     ReadBufferFromFileDescriptor std_in {STDIN_FILENO};
@@ -186,18 +186,18 @@ private:
         else if (Poco::File("/etc/clickhouse-client/config.xml").exists())
             loadConfiguration("/etc/clickhouse-client/config.xml");
 
-        context.setApplicationType(Context::ApplicationType::CLIENT);
+        context->setApplicationType(Context::ApplicationType::CLIENT);
 
         /// settings and limits could be specified in config file, but passed settings has higher priority
 #define EXTRACT_SETTING(TYPE, NAME, DEFAULT) \
-        if (config().has(#NAME) && !context.getSettingsRef().NAME.changed) \
-            context.setSetting(#NAME, config().getString(#NAME));
+        if (config().has(#NAME) && !context->getSettingsRef().NAME.changed) \
+            context->setSetting(#NAME, config().getString(#NAME));
         APPLY_FOR_SETTINGS(EXTRACT_SETTING)
 #undef EXTRACT_SETTING
 
 #define EXTRACT_LIMIT(TYPE, NAME, DEFAULT) \
-        if (config().has(#NAME) && !context.getSettingsRef().limits.NAME.changed) \
-            context.setSetting(#NAME, config().getString(#NAME));
+        if (config().has(#NAME) && !context.>getSettingsRef().limits.NAME.changed) \
+            context->setSetting(#NAME, config().getString(#NAME));
         APPLY_FOR_LIMITS(EXTRACT_LIMIT)
 #undef EXTRACT_LIMIT
     }
@@ -296,10 +296,10 @@ private:
         else
             format = config().getString("format", is_interactive ? "PrettyCompact" : "TabSeparated");
 
-        format_max_block_size = config().getInt("format_max_block_size", context.getSettingsRef().max_block_size);
+        format_max_block_size = config().getInt("format_max_block_size", context->getSettingsRef().max_block_size);
 
         insert_format = "Values";
-        insert_format_max_block_size = config().getInt("insert_format_max_block_size", context.getSettingsRef().max_insert_block_size);
+        insert_format_max_block_size = config().getInt("insert_format_max_block_size", context->getSettingsRef().max_insert_block_size);
 
         if (!is_interactive)
         {
@@ -311,7 +311,7 @@ private:
 
         /// Initialize DateLUT here to avoid counting time spent here as query execution time.
         DateLUT::instance();
-        if (!context.getSettingsRef().use_client_time_zone)
+        if (!context->getSettingsRef().use_client_time_zone)
         {
             const auto & time_zone = connection->getServerTimezone();
             if (!time_zone.empty())
@@ -656,7 +656,7 @@ private:
                     if (change.name == "profile")
                         current_profile = change.value.safeGet<String>();
                     else
-                        context.setSetting(change.name, change.value);
+                        context->setSetting(change.name, change.value);
                 }
             }
 
@@ -698,7 +698,7 @@ private:
 
         std::vector<ExternalTableData> data;
         for (auto & table : external_tables)
-            data.emplace_back(table.getData(context));
+            data.emplace_back(table.getData(*context));
 
         connection->sendExternalTablesData(data);
     }
@@ -707,7 +707,7 @@ private:
     /// Process the query that doesn't require transfering data blocks to the server.
     void processOrdinaryQuery()
     {
-        connection->sendQuery(query, "", QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
+        connection->sendQuery(query, "", QueryProcessingStage::Complete, &context->getSettingsRef(), nullptr, true);
         sendExternalTables();
         receiveResult();
     }
@@ -725,7 +725,7 @@ private:
         if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
             throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
 
-        connection->sendQuery(query_without_data, "", QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
+        connection->sendQuery(query_without_data, "", QueryProcessingStage::Complete, &context->getSettingsRef(), nullptr, true);
         sendExternalTables();
 
         /// Receive description of table structure.
@@ -802,7 +802,7 @@ private:
             if (!insert->format.empty())
                 current_format = insert->format;
 
-        BlockInputStreamPtr block_input = context.getInputFormat(
+        BlockInputStreamPtr block_input = context->getInputFormat(
             current_format, buf, sample, insert_format_max_block_size);
 
         BlockInputStreamPtr async_block_input = std::make_shared<AsynchronousBlockInputStream>(block_input);
@@ -989,7 +989,7 @@ private:
             if (has_vertical_output_suffix)
                 current_format = "Vertical";
 
-            block_out_stream = context.getOutputFormat("Null", *out_buf, block);
+            block_out_stream = context->getOutputFormat("Null", *out_buf, block);
             block_out_stream->writePrefix();
         }
     }
@@ -1341,7 +1341,7 @@ public:
         /// Extract settings and limits from the options.
 #define EXTRACT_SETTING(TYPE, NAME, DEFAULT) \
         if (options.count(#NAME)) \
-            context.setSetting(#NAME, options[#NAME].as<std::string>());
+            context->setSetting(#NAME, options[#NAME].as<std::string>());
         APPLY_FOR_SETTINGS(EXTRACT_SETTING)
         APPLY_FOR_LIMITS(EXTRACT_SETTING)
 #undef EXTRACT_SETTING
