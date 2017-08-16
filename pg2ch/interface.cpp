@@ -1448,10 +1448,15 @@ extern "C" int read_ch_query(CHReadCtx *ctx)
         if(ctx->tupleValues[j] == out_buf.position())
             out_buf.write((char*)"null", 5);
 
+
         *out_buf.position() = 0;
         out_buf.position()++;
+
+
+            std::cout << ctx->tupleValues[j] << std::endl;
         //out_buf.next();
     }
+    std::cout << std::endl;
     //ctx->tupleValues[0] = (char*)"0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
