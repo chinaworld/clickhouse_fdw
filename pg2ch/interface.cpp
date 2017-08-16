@@ -90,7 +90,7 @@ class Client : public Poco::Util::Application
 {
 public:
     Client() {
-        if(!context)
+        if(context == nullptr)
             context = Context::createGlobal(); //todo: thread safe init
     }
     std::vector<Block> *blocks;
