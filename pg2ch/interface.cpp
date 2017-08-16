@@ -53,7 +53,6 @@
 #define INTERFACE_C_LINKAGE
 #include "interface.h"
 
-
 /// http://en.wikipedia.org/wiki/ANSI_escape_code
 
 /// Similar codes \e[s, \e[u don't work in VT100 and Mosh.
@@ -66,72 +65,70 @@
 #define DISABLE_LINE_WRAPPING "\033[?7l"
 #define ENABLE_LINE_WRAPPING "\033[?7h"
 
-
 namespace DB
 {
 
 namespace ErrorCodes
 {
-    extern const int POCO_EXCEPTION;
-    extern const int STD_EXCEPTION;
-    extern const int UNKNOWN_EXCEPTION;
-    extern const int NETWORK_ERROR;
-    extern const int NO_DATA_TO_INSERT;
-    extern const int BAD_ARGUMENTS;
-    extern const int CANNOT_READ_HISTORY;
-    extern const int CANNOT_APPEND_HISTORY;
-    extern const int UNKNOWN_PACKET_FROM_SERVER;
-    extern const int UNEXPECTED_PACKET_FROM_SERVER;
-    extern const int CLIENT_OUTPUT_FORMAT_SPECIFIED;
+extern const int POCO_EXCEPTION;
+extern const int STD_EXCEPTION;
+extern const int UNKNOWN_EXCEPTION;
+extern const int NETWORK_ERROR;
+extern const int NO_DATA_TO_INSERT;
+extern const int BAD_ARGUMENTS;
+extern const int CANNOT_READ_HISTORY;
+extern const int CANNOT_APPEND_HISTORY;
+extern const int UNKNOWN_PACKET_FROM_SERVER;
+extern const int UNEXPECTED_PACKET_FROM_SERVER;
+extern const int CLIENT_OUTPUT_FORMAT_SPECIFIED;
 }
-
 
 class Client : public Poco::Util::Application
 {
-public:
-    Client() {
-    
+  public:
+    Client()
+    {
+
         static Context context_instance = Context::createGlobal();
         context = &context_instance;
     }
     std::vector<Block> *blocks;
 
-private:
+  private:
     using StringSet = std::unordered_set<String>;
-    StringSet exit_strings {
+    StringSet exit_strings{
         "exit", "quit", "logout",
         "учше", "йгше", "дщпщге",
         "exit;", "quit;", "logout;",
         "учшеж", "йгшеж", "дщпщгеж",
-        "q", "й", "\\q", "\\Q", "\\й", "\\Й", ":q", "Жй"
-    };
+        "q", "й", "\\q", "\\Q", "\\й", "\\Й", ":q", "Жй"};
 
-    bool is_interactive = true;          /// Use either readline interface or batch mode.
-    bool need_render_progress = true;    /// Render query execution progress.
-    bool echo_queries = false;           /// Print queries before execution in batch mode.
-    bool print_time_to_stderr = false;   /// Output execution time to stderr in batch mode.
-    bool stdin_is_not_tty = false;       /// stdin is not a terminal.
+    bool is_interactive = true;        /// Use either readline interface or batch mode.
+    bool need_render_progress = true;  /// Render query execution progress.
+    bool echo_queries = false;         /// Print queries before execution in batch mode.
+    bool print_time_to_stderr = false; /// Output execution time to stderr in batch mode.
+    bool stdin_is_not_tty = false;     /// stdin is not a terminal.
 
-    winsize terminal_size {};            /// Terminal size is needed to render progress bar.
+    winsize terminal_size{}; /// Terminal size is needed to render progress bar.
 
-    std::unique_ptr<Connection> connection;    /// Connection to DB.
-    String query;                        /// Current query.
+    std::unique_ptr<Connection> connection; /// Connection to DB.
+    String query;                           /// Current query.
 
-    String format;                       /// Query results output format.
-    bool is_default_format = true;       /// false, if format is set in the config or command line.
-    size_t format_max_block_size = 0;    /// Max block size for console output.
-    String insert_format;                /// Format of INSERT data that is read from stdin in batch mode.
+    String format;                           /// Query results output format.
+    bool is_default_format = true;           /// false, if format is set in the config or command line.
+    size_t format_max_block_size = 0;        /// Max block size for console output.
+    String insert_format;                    /// Format of INSERT data that is read from stdin in batch mode.
     size_t insert_format_max_block_size = 0; /// Max block size when reading INSERT data.
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
-    Context* context;
+    Context *context;
 
     /// Buffer that reads from stdin in batch mode.
-    ReadBufferFromFileDescriptor std_in {STDIN_FILENO};
+    ReadBufferFromFileDescriptor std_in{STDIN_FILENO};
 
     /// Console output.
-    WriteBufferFromFileDescriptor std_out {STDOUT_FILENO};
+    WriteBufferFromFileDescriptor std_out{STDOUT_FILENO};
     std::unique_ptr<ShellCommand> pager_cmd;
     /// The user can specify to redirect query output to a file.
     std::experimental::optional<WriteBufferFromFile> out_file_buf;
@@ -168,12 +165,11 @@ private:
     /// External tables info.
     std::list<ExternalTable> external_tables;
 
-
-    void initialize(Poco::Util::Application & self)
+    void initialize(Poco::Util::Application &self)
     {
         Poco::Util::Application::initialize(self);
 
-        const char * home_path_cstr = getenv("HOME");
+        const char *home_path_cstr = getenv("HOME");
         if (home_path_cstr)
             home_path = home_path_cstr;
 
@@ -188,28 +184,27 @@ private:
 
         context->setApplicationType(Context::ApplicationType::CLIENT);
 
-        /// settings and limits could be specified in config file, but passed settings has higher priority
-#define EXTRACT_SETTING(TYPE, NAME, DEFAULT) \
-        if (config().has(#NAME) && !context->getSettingsRef().NAME.changed) \
-            context->setSetting(#NAME, config().getString(#NAME));
+/// settings and limits could be specified in config file, but passed settings has higher priority
+#define EXTRACT_SETTING(TYPE, NAME, DEFAULT)                            \
+    if (config().has(#NAME) && !context->getSettingsRef().NAME.changed) \
+        context->setSetting(#NAME, config().getString(#NAME));
         APPLY_FOR_SETTINGS(EXTRACT_SETTING)
 #undef EXTRACT_SETTING
 
-#define EXTRACT_LIMIT(TYPE, NAME, DEFAULT) \
-        if (config().has(#NAME) && !context->getSettingsRef().limits.NAME.changed) \
-            context->setSetting(#NAME, config().getString(#NAME));
+#define EXTRACT_LIMIT(TYPE, NAME, DEFAULT)                                     \
+    if (config().has(#NAME) && !context->getSettingsRef().limits.NAME.changed) \
+        context->setSetting(#NAME, config().getString(#NAME));
         APPLY_FOR_LIMITS(EXTRACT_LIMIT)
 #undef EXTRACT_LIMIT
     }
 
-
-    int main(const std::vector<std::string> & args)
+    int main(const std::vector<std::string> &args)
     {
         try
         {
             return mainImpl(args);
         }
-        catch (const Exception & e)
+        catch (const Exception &e)
         {
             bool print_stack_trace = config().getBool("stacktrace", false);
 
@@ -223,27 +218,26 @@ private:
             if (std::string::npos != embedded_stack_trace_pos && !print_stack_trace)
                 text.resize(embedded_stack_trace_pos);
 
-             std::cerr << "Code: " << e.code() << ". " << text << std::endl << std::endl;
+            std::cerr << "Code: " << e.code() << ". " << text << std::endl
+                      << std::endl;
 
             /// Don't print the stack trace on the client if it was logged on the server.
             /// Also don't print the stack trace in case of network errors.
-            if (print_stack_trace
-                && e.code() != ErrorCodes::NETWORK_ERROR
-                && std::string::npos == embedded_stack_trace_pos)
+            if (print_stack_trace && e.code() != ErrorCodes::NETWORK_ERROR && std::string::npos == embedded_stack_trace_pos)
             {
                 std::cerr << "Stack trace:" << std::endl
-                    << e.getStackTrace().toString();
+                          << e.getStackTrace().toString();
             }
 
             /// If exception code isn't zero, we should return non-zero return code anyway.
             return e.code() ? e.code() : -1;
         }
-        catch (const Poco::Exception & e)
+        catch (const Poco::Exception &e)
         {
             std::cerr << "Poco::Exception: " << e.displayText() << std::endl;
             return ErrorCodes::POCO_EXCEPTION;
         }
-        catch (const std::exception & e)
+        catch (const std::exception &e)
         {
             std::cerr << "std::exception: " << e.what() << std::endl;
             return ErrorCodes::STD_EXCEPTION;
@@ -265,12 +259,10 @@ private:
             return false;
 
         LocalDate now(current_time);
-        return (now.month() == 12 && now.day() >= 20)
-            || (now.month() == 1 && now.day() <= 5);
+        return (now.month() == 12 && now.day() >= 20) || (now.month() == 1 && now.day() <= 5);
     }
 
-
-    int mainImpl(const std::vector<std::string> & args)
+    int mainImpl(const std::vector<std::string> &args)
     {
         registerFunctions();
         registerAggregateFunctions();
@@ -313,7 +305,7 @@ private:
         DateLUT::instance();
         if (!context->getSettingsRef().use_client_time_zone)
         {
-            const auto & time_zone = connection->getServerTimezone();
+            const auto &time_zone = connection->getServerTimezone();
             if (!time_zone.empty())
             {
                 try
@@ -323,16 +315,18 @@ private:
                 catch (...)
                 {
                     std::cerr << "Warning: could not switch to server time zone: " << time_zone
-                        << ", reason: " << getCurrentExceptionMessage(/* with_stacktrace = */ false) << std::endl
-                        << "Proceeding with local time zone."
-                        << std::endl << std::endl;
+                              << ", reason: " << getCurrentExceptionMessage(/* with_stacktrace = */ false) << std::endl
+                              << "Proceeding with local time zone."
+                              << std::endl
+                              << std::endl;
                 }
             }
             else
             {
                 std::cerr << "Warning: could not determine server time zone. "
-                    << "Proceeding with local time zone."
-                    << std::endl << std::endl;
+                          << "Proceeding with local time zone."
+                          << std::endl
+                          << std::endl;
             }
         }
 
@@ -360,7 +354,7 @@ private:
                         throwFromErrno("Cannot read history from file " + history_file, ErrorCodes::CANNOT_READ_HISTORY);
 #endif
                 }
-                else    /// Create history file.
+                else /// Create history file.
                     Poco::File(history_file).createFile();
             }
 
@@ -381,7 +375,6 @@ private:
         }
     }
 
-
     void connect()
     {
         String host = config().getString("host", "localhost");
@@ -391,20 +384,20 @@ private:
         String password = config().getString("password", "");
 
         Protocol::Compression::Enum compression = config().getBool("compression", true)
-            ? Protocol::Compression::Enable
-            : Protocol::Compression::Disable;
+                                                      ? Protocol::Compression::Enable
+                                                      : Protocol::Compression::Disable;
 
         if (is_interactive)
             std::cout << "Connecting to "
-                << (!default_database.empty() ? "database " + default_database + " at " : "")
-                << host << ":" << port
-                << (!user.empty() ? " as user " + user : "")
-                << "." << std::endl;
+                      << (!default_database.empty() ? "database " + default_database + " at " : "")
+                      << host << ":" << port
+                      << (!user.empty() ? " as user " + user : "")
+                      << "." << std::endl;
 
         connection = std::make_unique<Connection>(host, port, default_database, user, password, "client", compression,
-            Poco::Timespan(config().getInt("connect_timeout", DBMS_DEFAULT_CONNECT_TIMEOUT_SEC), 0),
-            Poco::Timespan(config().getInt("receive_timeout", DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC), 0),
-            Poco::Timespan(config().getInt("send_timeout", DBMS_DEFAULT_SEND_TIMEOUT_SEC), 0));
+                                                  Poco::Timespan(config().getInt("connect_timeout", DBMS_DEFAULT_CONNECT_TIMEOUT_SEC), 0),
+                                                  Poco::Timespan(config().getInt("receive_timeout", DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC), 0),
+                                                  Poco::Timespan(config().getInt("send_timeout", DBMS_DEFAULT_SEND_TIMEOUT_SEC), 0));
 
         if (is_interactive)
         {
@@ -416,37 +409,35 @@ private:
             connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
 
             std::cout << "Connected to " << server_name
-                << " server version " << server_version_major
-                << "." << server_version_minor
-                << "." << server_revision
-                << "." << std::endl << std::endl;
+                      << " server version " << server_version_major
+                      << "." << server_version_minor
+                      << "." << server_revision
+                      << "." << std::endl
+                      << std::endl;
         }
     }
-
 
     static bool isWhitespace(char c)
     {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f';
     }
 
-
     /// Check if multi-line query is inserted from the paste buffer.
     /// Allows delaying the start of query execution until the entirety of query is inserted.
     static bool hasDataInSTDIN()
     {
-        timeval timeout = { 0, 0 };
+        timeval timeout = {0, 0};
         fd_set fds;
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
         return select(1, &fds, 0, 0, &timeout) == 1;
     }
 
-
     void loop()
     {
         String query;
         String prev_query;
-        while (char * line_ = readline(query.empty() ? ":) " : ":-] "))
+        while (char *line_ = readline(query.empty() ? ":) " : ":-] "))
         {
             String line = line_;
             free(line_);
@@ -499,12 +490,12 @@ private:
                     if (!process(query))
                         break;
                 }
-                catch (const Exception & e)
+                catch (const Exception &e)
                 {
                     std::cerr << std::endl
-                        << "Exception on client:" << std::endl
-                        << "Code: " << e.code() << ". " << e.displayText() << std::endl
-                        << std::endl;
+                              << "Exception on client:" << std::endl
+                              << "Code: " << e.code() << ". " << e.displayText() << std::endl
+                              << std::endl;
 
                     /// Client-side exception during query execution can result in the loss of
                     /// sync in the connection protocol.
@@ -520,7 +511,6 @@ private:
             }
         }
     }
-
 
     void nonInteractive()
     {
@@ -538,8 +528,7 @@ private:
         process(line);
     }
 
-
-    bool process(const String & line)
+    bool process(const String &line)
     {
         if (config().has("multiquery"))
         {
@@ -548,17 +537,17 @@ private:
 
             String query;
 
-            const char * begin = line.data();
-            const char * end = begin + line.size();
+            const char *begin = line.data();
+            const char *end = begin + line.size();
 
             while (begin < end)
             {
-                const char * pos = begin;
+                const char *pos = begin;
                 ASTPtr ast = parseQuery(pos, end, true);
                 if (!ast)
                     return true;
 
-                ASTInsertQuery * insert = typeid_cast<ASTInsertQuery *>(&*ast);
+                ASTInsertQuery *insert = typeid_cast<ASTInsertQuery *>(&*ast);
 
                 if (insert && insert->data)
                 {
@@ -594,8 +583,7 @@ private:
         }
     }
 
-
-    bool processSingleQuery(const String & line, ASTPtr parsed_query_ = nullptr)
+    bool processSingleQuery(const String &line, ASTPtr parsed_query_ = nullptr)
     {
         if (exit_strings.end() != exit_strings.find(line))
             return false;
@@ -620,7 +608,7 @@ private:
 
         if (!parsed_query)
         {
-            const char * begin = query.data();
+            const char *begin = query.data();
             parsed_query = parseQuery(begin, begin + query.size(), false);
         }
 
@@ -633,10 +621,10 @@ private:
         written_progress_chars = 0;
         written_first_block = false;
 
-        const ASTSetQuery * set_query = typeid_cast<const ASTSetQuery *>(&*parsed_query);
-        const ASTUseQuery * use_query = typeid_cast<const ASTUseQuery *>(&*parsed_query);
+        const ASTSetQuery *set_query = typeid_cast<const ASTSetQuery *>(&*parsed_query);
+        const ASTUseQuery *use_query = typeid_cast<const ASTUseQuery *>(&*parsed_query);
         /// INSERT query for which data transfer is needed (not an INSERT SELECT) is processed separately.
-        const ASTInsertQuery * insert = typeid_cast<const ASTInsertQuery *>(&*parsed_query);
+        const ASTInsertQuery *insert = typeid_cast<const ASTInsertQuery *>(&*parsed_query);
 
         connection->forceConnected();
 
@@ -651,7 +639,7 @@ private:
             if (set_query)
             {
                 /// Save all changes in settings to avoid losing them if the connection is lost.
-                for (const auto & change : set_query->changes)
+                for (const auto &change : set_query->changes)
                 {
                     if (change.name == "profile")
                         current_profile = change.value.safeGet<String>();
@@ -662,7 +650,7 @@ private:
 
             if (use_query)
             {
-                const String & new_database = use_query->database;
+                const String &new_database = use_query->database;
                 /// If the client initiates the reconnection, it takes the settings from the config.
                 config().setString("database", new_database);
                 /// If the connection initiates the reconnection, it uses its variable.
@@ -673,12 +661,13 @@ private:
         if (is_interactive)
         {
             std::cout << std::endl
-                << processed_rows << " rows in set. Elapsed: " << watch.elapsedSeconds() << " sec. ";
+                      << processed_rows << " rows in set. Elapsed: " << watch.elapsedSeconds() << " sec. ";
 
             if (progress.rows >= 1000)
                 writeFinalProgress();
 
-            std::cout << std::endl << std::endl;
+            std::cout << std::endl
+                      << std::endl;
         }
         else if (print_time_to_stderr)
         {
@@ -688,21 +677,19 @@ private:
         return true;
     }
 
-
     /// Convert external tables to ExternalTableData and send them using the connection.
     void sendExternalTables()
     {
-        const ASTSelectQuery * select = typeid_cast<const ASTSelectQuery *>(&*parsed_query);
+        const ASTSelectQuery *select = typeid_cast<const ASTSelectQuery *>(&*parsed_query);
         if (!select && !external_tables.empty())
             throw Exception("External tables could be sent only with select query", ErrorCodes::BAD_ARGUMENTS);
 
         std::vector<ExternalTableData> data;
-        for (auto & table : external_tables)
+        for (auto &table : external_tables)
             data.emplace_back(table.getData(*context));
 
         connection->sendExternalTablesData(data);
     }
-
 
     /// Process the query that doesn't require transfering data blocks to the server.
     void processOrdinaryQuery()
@@ -712,15 +699,14 @@ private:
         receiveResult();
     }
 
-
     /// Process the query that requires transfering data blocks to the server.
     void processInsertQuery()
     {
         /// Send part of query without data, because data will be sent separately.
-        const ASTInsertQuery & parsed_insert_query = typeid_cast<const ASTInsertQuery &>(*parsed_query);
+        const ASTInsertQuery &parsed_insert_query = typeid_cast<const ASTInsertQuery &>(*parsed_query);
         String query_without_data = parsed_insert_query.data
-            ? query.substr(0, parsed_insert_query.data - query.data())
-            : query;
+                                        ? query.substr(0, parsed_insert_query.data - query.data())
+                                        : query;
 
         if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
             throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
@@ -739,8 +725,7 @@ private:
         }
     }
 
-
-    ASTPtr parseQuery(const char * & pos, const char * end, bool allow_multi_statements)
+    ASTPtr parseQuery(const char *&pos, const char *end, bool allow_multi_statements)
     {
         ParserQuery parser(end);
         ASTPtr res;
@@ -752,7 +737,9 @@ private:
 
             if (!res)
             {
-                std::cerr << std::endl << message << std::endl << std::endl;
+                std::cerr << std::endl
+                          << message << std::endl
+                          << std::endl;
                 return nullptr;
             }
         }
@@ -763,17 +750,17 @@ private:
         {
             std::cout << std::endl;
             formatAST(*res, std::cout);
-            std::cout << std::endl << std::endl;
+            std::cout << std::endl
+                      << std::endl;
         }
 
         return res;
     }
 
-
-    void sendData(Block & sample)
+    void sendData(Block &sample)
     {
         /// If INSERT data must be sent.
-        const ASTInsertQuery * parsed_insert_query = typeid_cast<const ASTInsertQuery *>(&*parsed_query);
+        const ASTInsertQuery *parsed_insert_query = typeid_cast<const ASTInsertQuery *>(&*parsed_query);
         if (!parsed_insert_query)
             return;
 
@@ -792,13 +779,12 @@ private:
             throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
     }
 
-
-    void sendDataFrom(ReadBuffer & buf, Block & sample)
+    void sendDataFrom(ReadBuffer &buf, Block &sample)
     {
         String current_format = insert_format;
 
         /// Data format can be specified in the INSERT query.
-        if (ASTInsertQuery * insert = typeid_cast<ASTInsertQuery *>(&*parsed_query))
+        if (ASTInsertQuery *insert = typeid_cast<ASTInsertQuery *>(&*parsed_query))
             if (!insert->format.empty())
                 current_format = insert->format;
 
@@ -822,7 +808,6 @@ private:
         async_block_input->readSuffix();
     }
 
-
     /// Flush all buffers.
     void resetOutput()
     {
@@ -840,7 +825,6 @@ private:
         }
         std_out.next();
     }
-
 
     /// Receives and processes packets coming from server.
     /// Also checks if query execution should be cancelled.
@@ -867,7 +851,7 @@ private:
                     interrupt_listener.unblock();
                 }
                 else if (!connection->poll(1000000))
-                    continue;    /// If there is no new data, continue checking whether the query was cancelled after a timeout.
+                    continue; /// If there is no new data, continue checking whether the query was cancelled after a timeout.
             }
 
             if (!receivePacket())
@@ -878,7 +862,6 @@ private:
             std::cout << "Query was cancelled." << std::endl;
     }
 
-
     /// Receive a part of the result, or progress info or an exception and process it.
     /// Returns true if one should continue receiving packets.
     bool receivePacket()
@@ -887,69 +870,66 @@ private:
 
         switch (packet.type)
         {
-            case Protocol::Server::Data:
-                onData(packet.block);
-                return true;
+        case Protocol::Server::Data:
+            onData(packet.block);
+            return true;
 
-            case Protocol::Server::Progress:
-                onProgress(packet.progress);
-                return true;
+        case Protocol::Server::Progress:
+            onProgress(packet.progress);
+            return true;
 
-            case Protocol::Server::ProfileInfo:
-                onProfileInfo(packet.profile_info);
-                return true;
+        case Protocol::Server::ProfileInfo:
+            onProfileInfo(packet.profile_info);
+            return true;
 
-            case Protocol::Server::Totals:
-                onTotals(packet.block);
-                return true;
+        case Protocol::Server::Totals:
+            onTotals(packet.block);
+            return true;
 
-            case Protocol::Server::Extremes:
-                onExtremes(packet.block);
-                return true;
+        case Protocol::Server::Extremes:
+            onExtremes(packet.block);
+            return true;
 
-            case Protocol::Server::Exception:
-                onException(*packet.exception);
-                last_exception = std::move(packet.exception);
-                return false;
+        case Protocol::Server::Exception:
+            onException(*packet.exception);
+            last_exception = std::move(packet.exception);
+            return false;
 
-            case Protocol::Server::EndOfStream:
-                onEndOfStream();
-                return false;
+        case Protocol::Server::EndOfStream:
+            onEndOfStream();
+            return false;
 
-            default:
-                throw Exception("Unknown packet from server", ErrorCodes::UNKNOWN_PACKET_FROM_SERVER);
+        default:
+            throw Exception("Unknown packet from server", ErrorCodes::UNKNOWN_PACKET_FROM_SERVER);
         }
     }
 
-
     /// Receive the block that serves as an example of the structure of table where data will be inserted.
-    bool receiveSampleBlock(Block & out)
+    bool receiveSampleBlock(Block &out)
     {
         Connection::Packet packet = connection->receivePacket();
 
         switch (packet.type)
         {
-            case Protocol::Server::Data:
-                out = packet.block;
-                return true;
+        case Protocol::Server::Data:
+            out = packet.block;
+            return true;
 
-            case Protocol::Server::Exception:
-                onException(*packet.exception);
-                last_exception = std::move(packet.exception);
-                return false;
+        case Protocol::Server::Exception:
+            onException(*packet.exception);
+            last_exception = std::move(packet.exception);
+            return false;
 
-            default:
-                throw NetException("Unexpected packet from server (expected Data, got "
-                    + String(Protocol::Server::toString(packet.type)) + ")", ErrorCodes::UNEXPECTED_PACKET_FROM_SERVER);
+        default:
+            throw NetException("Unexpected packet from server (expected Data, got " + String(Protocol::Server::toString(packet.type)) + ")", ErrorCodes::UNEXPECTED_PACKET_FROM_SERVER);
         }
     }
 
-
-    void initBlockOutputStream(const Block & block)
+    void initBlockOutputStream(const Block &block)
     {
         if (!block_out_stream)
         {
-            WriteBuffer * out_buf = nullptr;
+            WriteBuffer *out_buf = nullptr;
             String pager = config().getString("pager", "");
             if (!pager.empty())
             {
@@ -964,12 +944,12 @@ private:
             String current_format = format;
 
             /// The query can specify output format or output file.
-            if (ASTQueryWithOutput * query_with_output = dynamic_cast<ASTQueryWithOutput *>(&*parsed_query))
+            if (ASTQueryWithOutput *query_with_output = dynamic_cast<ASTQueryWithOutput *>(&*parsed_query))
             {
                 if (query_with_output->out_file != nullptr)
                 {
-                    const auto & out_file_node = typeid_cast<const ASTLiteral &>(*query_with_output->out_file);
-                    const auto & out_file = out_file_node.value.safeGet<std::string>();
+                    const auto &out_file_node = typeid_cast<const ASTLiteral &>(*query_with_output->out_file);
+                    const auto &out_file = out_file_node.value.safeGet<std::string>();
                     out_file_buf.emplace(out_file, DBMS_DEFAULT_BUFFER_SIZE, O_WRONLY | O_EXCL | O_CREAT);
                     out_buf = &out_file_buf.value();
 
@@ -981,7 +961,7 @@ private:
                 {
                     if (has_vertical_output_suffix)
                         throw Exception("Output format already specified", ErrorCodes::CLIENT_OUTPUT_FORMAT_SPECIFIED);
-                    const auto & id = typeid_cast<const ASTIdentifier &>(*query_with_output->format);
+                    const auto &id = typeid_cast<const ASTIdentifier &>(*query_with_output->format);
                     current_format = id.name;
                 }
             }
@@ -994,19 +974,18 @@ private:
         }
     }
 
-
-    void onData(Block & block)
-    {        
+    void onData(Block &block)
+    {
         if (written_progress_chars)
             clearProgress();
 
         if (!block)
             return;
 
-        if(blocks)
-            {
-                blocks->emplace_back(block);
-            }
+        if (blocks)
+        {
+            blocks->emplace_back(block);
+        }
 
         processed_rows += block.rows();
         initBlockOutputStream(block);
@@ -1022,27 +1001,24 @@ private:
         block_out_stream->flush();
     }
 
-
-    void onTotals(Block & block)
+    void onTotals(Block &block)
     {
         initBlockOutputStream(block);
         block_out_stream->setTotals(block);
     }
 
-    void onExtremes(Block & block)
+    void onExtremes(Block &block)
     {
         initBlockOutputStream(block);
         block_out_stream->setExtremes(block);
     }
 
-
-    void onProgress(const Progress & value)
+    void onProgress(const Progress &value)
     {
         progress.incrementPiecewiseAtomically(value);
         block_out_stream->onProgress(value);
         writeProgress();
     }
-
 
     void clearProgress()
     {
@@ -1050,24 +1026,23 @@ private:
         written_progress_chars = 0;
     }
 
-
     void writeProgress()
     {
         if (!need_render_progress)
             return;
 
         static size_t increment = 0;
-        static const char * indicators[8] =
-        {
-            "\033[1;30m→\033[0m",
-            "\033[1;31m↘\033[0m",
-            "\033[1;32m↓\033[0m",
-            "\033[1;33m↙\033[0m",
-            "\033[1;34m←\033[0m",
-            "\033[1;35m↖\033[0m",
-            "\033[1;36m↑\033[0m",
-            "\033[1m↗\033[0m",
-        };
+        static const char *indicators[8] =
+            {
+                "\033[1;30m→\033[0m",
+                "\033[1;31m↘\033[0m",
+                "\033[1;32m↓\033[0m",
+                "\033[1;33m↙\033[0m",
+                "\033[1;34m←\033[0m",
+                "\033[1;35m↖\033[0m",
+                "\033[1;36m↑\033[0m",
+                "\033[1m↗\033[0m",
+            };
 
         if (written_progress_chars)
             clearProgress();
@@ -1076,8 +1051,8 @@ private:
 
         std::stringstream message;
         message << indicators[increment % 8]
-            << std::fixed << std::setprecision(3)
-            << " Progress: ";
+                << std::fixed << std::setprecision(3)
+                << " Progress: ";
 
         message
             << formatReadableQuantity(progress.rows) << " rows, "
@@ -1086,8 +1061,8 @@ private:
         size_t elapsed_ns = watch.elapsed();
         if (elapsed_ns)
             message << " ("
-                << formatReadableQuantity(progress.rows * 1000000000.0 / elapsed_ns) << " rows/s., "
-                << formatReadableSizeWithDecimalSuffix(progress.bytes * 1000000000.0 / elapsed_ns) << "/s.) ";
+                    << formatReadableQuantity(progress.rows * 1000000000.0 / elapsed_ns) << " rows/s., "
+                    << formatReadableSizeWithDecimalSuffix(progress.bytes * 1000000000.0 / elapsed_ns) << "/s.) ";
         else
             message << ". ";
 
@@ -1116,7 +1091,7 @@ private:
                         std::string bar = UnicodeBar::render(UnicodeBar::getWidth(progress.rows, 0, total_rows_corrected, width_of_progress_bar));
                         std::cerr << "\033[0;32m" << bar << "\033[0m";
                         if (width_of_progress_bar > static_cast<ssize_t>(bar.size() / UNICODE_BAR_CHAR_SIZE))
-                        std::cerr << std::string(width_of_progress_bar - bar.size() / UNICODE_BAR_CHAR_SIZE, ' ');
+                            std::cerr << std::string(width_of_progress_bar - bar.size() / UNICODE_BAR_CHAR_SIZE, ' ');
                     }
                 }
             }
@@ -1129,24 +1104,22 @@ private:
         ++increment;
     }
 
-
     void writeFinalProgress()
     {
         std::cout << "Processed "
-            << formatReadableQuantity(progress.rows) << " rows, "
-            << formatReadableSizeWithDecimalSuffix(progress.bytes);
+                  << formatReadableQuantity(progress.rows) << " rows, "
+                  << formatReadableSizeWithDecimalSuffix(progress.bytes);
 
         size_t elapsed_ns = watch.elapsed();
         if (elapsed_ns)
             std::cout << " ("
-                << formatReadableQuantity(progress.rows * 1000000000.0 / elapsed_ns) << " rows/s., "
-                << formatReadableSizeWithDecimalSuffix(progress.bytes * 1000000000.0 / elapsed_ns) << "/s.) ";
+                      << formatReadableQuantity(progress.rows * 1000000000.0 / elapsed_ns) << " rows/s., "
+                      << formatReadableSizeWithDecimalSuffix(progress.bytes * 1000000000.0 / elapsed_ns) << "/s.) ";
         else
             std::cout << ". ";
     }
 
-
-    void onException(const Exception & e)
+    void onException(const Exception &e)
     {
         resetOutput();
         got_exception = true;
@@ -1158,16 +1131,14 @@ private:
             text.resize(embedded_stack_trace_pos);
 
         std::cerr << "Received exception from server:" << std::endl
-            << "Code: " << e.code() << ". " << text << std::endl;
+                  << "Code: " << e.code() << ". " << text << std::endl;
     }
 
-
-    void onProfileInfo(const BlockStreamProfileInfo & profile_info)
+    void onProfileInfo(const BlockStreamProfileInfo &profile_info)
     {
         if (profile_info.hasAppliedLimit() && block_out_stream)
             block_out_stream->setRowsBeforeLimit(profile_info.getRowsBeforeLimit());
     }
-
 
     void onEndOfStream()
     {
@@ -1183,13 +1154,13 @@ private:
     void showClientVersion()
     {
         std::cout << "ClickHouse client version " << DBMS_VERSION_MAJOR
-            << "." << DBMS_VERSION_MINOR
-            << "." << ClickHouseRevision::get()
-            << "." << std::endl;
+                  << "." << DBMS_VERSION_MINOR
+                  << "." << ClickHouseRevision::get()
+                  << "." << std::endl;
     }
 
-public:
-    void initStatic(int argc, char ** argv)
+  public:
+    void initStatic(int argc, char **argv)
     {
         /// Don't parse options with Poco library. We need more sophisticated processing.
         stopOptionsProcessing();
@@ -1202,13 +1173,13 @@ public:
           */
         using Arguments = std::vector<const char *>;
 
-        Arguments common_arguments{""};        /// 0th argument is ignored.
+        Arguments common_arguments{""}; /// 0th argument is ignored.
         std::vector<Arguments> external_tables_arguments;
 
         bool in_external_group = false;
         for (int arg_num = 1; arg_num < argc; ++arg_num)
         {
-            const char * arg = argv[arg_num];
+            const char *arg = argv[arg_num];
 
             if (0 == strcmp(arg, "--external"))
             {
@@ -1216,22 +1187,12 @@ public:
                 external_tables_arguments.emplace_back(Arguments{""});
             }
             /// Options with value after equal sign.
-            else if (in_external_group
-                && (0 == strncmp(arg, "--file=", strlen("--file="))
-                 || 0 == strncmp(arg, "--name=", strlen("--name="))
-                 || 0 == strncmp(arg, "--format=", strlen("--format="))
-                 || 0 == strncmp(arg, "--structure=", strlen("--structure="))
-                 || 0 == strncmp(arg, "--types=", strlen("--types="))))
+            else if (in_external_group && (0 == strncmp(arg, "--file=", strlen("--file=")) || 0 == strncmp(arg, "--name=", strlen("--name=")) || 0 == strncmp(arg, "--format=", strlen("--format=")) || 0 == strncmp(arg, "--structure=", strlen("--structure=")) || 0 == strncmp(arg, "--types=", strlen("--types="))))
             {
                 external_tables_arguments.back().emplace_back(arg);
             }
             /// Options with value after whitespace.
-            else if (in_external_group
-                && (0 == strcmp(arg, "--file")
-                 || 0 == strcmp(arg, "--name")
-                 || 0 == strcmp(arg, "--format")
-                 || 0 == strcmp(arg, "--structure")
-                 || 0 == strcmp(arg, "--types")))
+            else if (in_external_group && (0 == strcmp(arg, "--file") || 0 == strcmp(arg, "--name") || 0 == strcmp(arg, "--format") || 0 == strcmp(arg, "--structure") || 0 == strcmp(arg, "--types")))
             {
                 if (arg_num + 1 < argc)
                 {
@@ -1250,50 +1211,26 @@ public:
             }
         }
 
-#define DECLARE_SETTING(TYPE, NAME, DEFAULT) (#NAME, boost::program_options::value<std::string> (), "Settings.h")
-#define DECLARE_LIMIT(TYPE, NAME, DEFAULT) (#NAME, boost::program_options::value<std::string> (), "Limits.h")
+#define DECLARE_SETTING(TYPE, NAME, DEFAULT) (#NAME, boost::program_options::value<std::string>(), "Settings.h")
+#define DECLARE_LIMIT(TYPE, NAME, DEFAULT) (#NAME, boost::program_options::value<std::string>(), "Limits.h")
 
         /// Main commandline options related to client functionality and all parameters from Settings.
         boost::program_options::options_description main_description("Main options");
-        main_description.add_options()
-            ("help", "produce help message")
-            ("config-file,c", boost::program_options::value<std::string>(), "config-file path")
-            ("host,h", boost::program_options::value<std::string>()->default_value("localhost"), "server host")
-            ("port", boost::program_options::value<int>()->default_value(9000), "server port")
-            ("user,u", boost::program_options::value<std::string>(), "user")
-            ("password", boost::program_options::value<std::string>(), "password")
-            ("query,q", boost::program_options::value<std::string>(), "query")
-            ("database,d", boost::program_options::value<std::string>(), "database")
-            ("pager", boost::program_options::value<std::string>(), "pager")
-            ("multiline,m", "multiline")
-            ("multiquery,n", "multiquery")
-            ("format,f", boost::program_options::value<std::string>(), "default output format")
-            ("vertical,E", "vertical output format, same as --format=Vertical or FORMAT Vertical or \\G at end of command")
-            ("time,t", "print query execution time to stderr in non-interactive mode (for benchmarks)")
-            ("stacktrace", "print stack traces of exceptions")
-            ("progress", "print progress even in non-interactive mode")
-            ("version,V", "print version information and exit")
-            ("echo", "in batch mode, print query before execution")
-            ("compression", boost::program_options::value<bool>(), "enable or disable compression")
+        main_description.add_options()("help", "produce help message")("config-file,c", boost::program_options::value<std::string>(), "config-file path")("host,h", boost::program_options::value<std::string>()->default_value("localhost"), "server host")("port", boost::program_options::value<int>()->default_value(9000), "server port")("user,u", boost::program_options::value<std::string>(), "user")("password", boost::program_options::value<std::string>(), "password")("query,q", boost::program_options::value<std::string>(), "query")("database,d", boost::program_options::value<std::string>(), "database")("pager", boost::program_options::value<std::string>(), "pager")("multiline,m", "multiline")("multiquery,n", "multiquery")("format,f", boost::program_options::value<std::string>(), "default output format")("vertical,E", "vertical output format, same as --format=Vertical or FORMAT Vertical or \\G at end of command")("time,t", "print query execution time to stderr in non-interactive mode (for benchmarks)")("stacktrace", "print stack traces of exceptions")("progress", "print progress even in non-interactive mode")("version,V", "print version information and exit")("echo", "in batch mode, print query before execution")("compression", boost::program_options::value<bool>(), "enable or disable compression")
             APPLY_FOR_SETTINGS(DECLARE_SETTING)
-            APPLY_FOR_LIMITS(DECLARE_LIMIT)
-        ;
+                APPLY_FOR_LIMITS(DECLARE_LIMIT);
 #undef DECLARE_SETTING
 #undef DECLARE_LIMIT
 
         /// Commandline options related to external tables.
         boost::program_options::options_description external_description("External tables options");
-        external_description.add_options()
-            ("file", boost::program_options::value<std::string>(), "data file or - for stdin")
-            ("name", boost::program_options::value<std::string>()->default_value("_data"), "name of the table")
-            ("format", boost::program_options::value<std::string>()->default_value("TabSeparated"), "data format")
-            ("structure", boost::program_options::value<std::string>(), "structure")
-            ("types", boost::program_options::value<std::string>(), "types")
-        ;
+        external_description.add_options()("file", boost::program_options::value<std::string>(), "data file or - for stdin")("name", boost::program_options::value<std::string>()->default_value("_data"), "name of the table")("format", boost::program_options::value<std::string>()->default_value("TabSeparated"), "data format")("structure", boost::program_options::value<std::string>(), "structure")("types", boost::program_options::value<std::string>(), "types");
 
         /// Parse main commandline options.
         boost::program_options::parsed_options parsed = boost::program_options::command_line_parser(
-            common_arguments.size(), common_arguments.data()).options(main_description).run();
+                                                            common_arguments.size(), common_arguments.data())
+                                                            .options(main_description)
+                                                            .run();
         boost::program_options::variables_map options;
         boost::program_options::store(parsed, options);
 
@@ -1304,8 +1241,7 @@ public:
         }
 
         /// Output of help message.
-        if (options.count("help")
-            || (options.count("host") && options["host"].as<std::string>() == "elp"))    /// If user writes -help instead of --help.
+        if (options.count("help") || (options.count("host") && options["host"].as<std::string>() == "elp")) /// If user writes -help instead of --help.
         {
             std::cout << main_description << "\n";
             std::cout << external_description << "\n";
@@ -1317,7 +1253,9 @@ public:
         {
             /// Parse commandline options related to external tables.
             boost::program_options::parsed_options parsed = boost::program_options::command_line_parser(
-                external_tables_arguments[i].size(), external_tables_arguments[i].data()).options(external_description).run();
+                                                                external_tables_arguments[i].size(), external_tables_arguments[i].data())
+                                                                .options(external_description)
+                                                                .run();
             boost::program_options::variables_map external_options;
             boost::program_options::store(parsed, external_options);
 
@@ -1329,19 +1267,20 @@ public:
                 if (number_of_external_tables_with_stdin_source > 1)
                     throw Exception("Two or more external tables has stdin (-) set as --file field", ErrorCodes::BAD_ARGUMENTS);
             }
-            catch (const Exception & e)
+            catch (const Exception &e)
             {
                 std::string text = e.displayText();
                 std::cerr << "Code: " << e.code() << ". " << text << std::endl;
-                std::cerr << "Table №" << i << std::endl << std::endl;
+                std::cerr << "Table №" << i << std::endl
+                          << std::endl;
                 exit(e.code());
             }
         }
 
-        /// Extract settings and limits from the options.
+/// Extract settings and limits from the options.
 #define EXTRACT_SETTING(TYPE, NAME, DEFAULT) \
-        if (options.count(#NAME)) \
-            context->setSetting(#NAME, options[#NAME].as<std::string>());
+    if (options.count(#NAME))                \
+        context->setSetting(#NAME, options[#NAME].as<std::string>());
         APPLY_FOR_SETTINGS(EXTRACT_SETTING)
         APPLY_FOR_LIMITS(EXTRACT_SETTING)
 #undef EXTRACT_SETTING
@@ -1385,15 +1324,14 @@ public:
             config().setBool("compression", options["compression"].as<bool>());
     }
 
-    void initWorker(char* sql)
+    void initWorker(char *sql)
     {
         config().setString("format", sql);
     }
 };
-
 }
 
-std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv, char* sql)
+std::vector<DB::Block> *mainEntryClickHouseClient(int argc, char **argv, char *sql)
 {
     static bool firstRun = false;
     static DB::Client client;
@@ -1401,13 +1339,14 @@ std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv, char* 
 
     try
     {
-        if(firstRun){
+        if (firstRun)
+        {
             firstRun = false;
             client.initStatic(argc, argv);
         }
         client.initWorker(sql);
     }
-    catch (const boost::program_options::error & e)
+    catch (const boost::program_options::error &e)
     {
         std::cerr << "Bad arguments: " << e.what() << std::endl;
         return nullptr;
@@ -1420,16 +1359,16 @@ std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv, char* 
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     try
-    {        
+    {
         {
-            std::vector<std::string> arguments = {"","--query",cstrQuery};
+            std::vector<std::string> arguments = {"", "--query", cstrQuery};
 
             std::vector<char *> argv;
             for (const auto &arg : arguments)
                 argv.push_back((char *)arg.data());
             argv.push_back(nullptr);
 
-            mainEntryClickHouseClient(argv.size() - 1, argv.data());
+            mainEntryClickHouseClient(argv.size() - 1, argv.data(), strQuery);
         }
     }
     catch (const Poco::Exception &e)
@@ -1441,79 +1380,81 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
     }
 }
 
-extern "C" void begin_ch_query(CHReadCtx *ctx){
-        {
-            std::vector<std::string> arguments = {"","--query",ctx->sql,"--host","olapdb-test02f.mail.yandex.net","--user","reader","--password",ctx->password};
+extern "C" void begin_ch_query(CHReadCtx *ctx)
+{
+    {
+        std::vector<std::string> arguments = {"", "--query", ctx->sql, "--host", "olapdb-test02f.mail.yandex.net", "--user", "reader", "--password", ctx->password};
 
-            std::vector<char *> argv;
-            for (const auto &arg : arguments)
-                argv.push_back((char *)arg.data());
-            argv.push_back(nullptr);
+        std::vector<char *> argv;
+        for (const auto &arg : arguments)
+            argv.push_back((char *)arg.data());
+        argv.push_back(nullptr);
 
-            auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data(), ctx->sql);
-            ctx->blocks = (void*) blocks; 
-            ctx->blockRows = (*blocks)[0].rows();
-            std::stringstream* str_stream = new std::stringstream{};
-            ctx->streamPtr = (void*) str_stream;
-            ctx->writeBufferPtr = (void*) new DB::WriteBufferFromOStream(*str_stream);
-        }
+        auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data(), ctx->sql);
+        ctx->blocks = (void *)blocks;
+        ctx->blockRows = (*blocks)[0].rows();
+        std::stringstream *str_stream = new std::stringstream{};
+        ctx->streamPtr = (void *)str_stream;
+        ctx->writeBufferPtr = (void *)new DB::WriteBufferFromOStream(*str_stream);
+    }
 }
 
-extern "C" void end_ch_query(CHReadCtx *ctx){
+extern "C" void end_ch_query(CHReadCtx *ctx)
+{
 
     //std::cout<<"end call"<< ctx->currentRow <<std::endl;
-    auto blcs = (std::vector<DB::Block>*)ctx->blocks;
+    auto blcs = (std::vector<DB::Block> *)ctx->blocks;
     delete blcs;
 }
 
-
-extern "C" int read_ch_query(CHReadCtx *ctx){
+extern "C" int read_ch_query(CHReadCtx *ctx)
+{
     //std::cout<<"read call"<< ctx->currentRow <<std::endl;
-    std::vector<DB::Block>& blcs = *((std::vector<DB::Block>*)ctx->blocks);
+    std::vector<DB::Block> &blcs = *((std::vector<DB::Block> *)ctx->blocks);
 
-//todo: make block advancement repliable to zero length blocks
-    if(ctx->currentBlock >= blcs.size())
+    //todo: make block advancement repliable to zero length blocks
+    if (ctx->currentBlock >= blcs.size())
         return 0;
 
-    while(ctx->currentRow >= ctx->blockRows){
+    while (ctx->currentRow >= ctx->blockRows)
+    {
         //std::cout<<"next block"<<std::endl;
         ++(ctx->currentBlock);
         ctx->currentRow = 0;
 
-        if(ctx->currentBlock >= blcs.size())
+        if (ctx->currentBlock >= blcs.size())
             return 0;
         ctx->blockRows = blcs[ctx->currentBlock].rows();
     }
 
     //snprintf(ctx->tupleValues[0], 16, "%d", ctx->currentRow);
 
-    std::stringstream& str_stream = *((std::stringstream*)ctx->streamPtr);
+    std::stringstream &str_stream = *((std::stringstream *)ctx->streamPtr);
     str_stream.seekg(0);
     str_stream.seekp(0);
-    DB::WriteBufferFromOStream& out_buf = *((DB::WriteBufferFromOStream*)ctx->writeBufferPtr);
+    DB::WriteBufferFromOStream &out_buf = *((DB::WriteBufferFromOStream *)ctx->writeBufferPtr);
 
     for (size_t j = 0; j < ctx->natts; ++j)
-        {
-            auto & col = 
+    {
+        auto &col =
             blcs[ctx->currentBlock].getByPosition(j);
 
-            ctx->tupleValues[j] = out_buf.position();
+        ctx->tupleValues[j] = out_buf.position();
         //std::cout<<"serilalize begin: currentRow "<< ctx->currentRow << " block rows "<< blcs[ctx->currentBlock].rows() << std::endl;
-            col.type.get()->serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
+        col.type.get()->serializeTextEscaped(*col.column.get(), ctx->currentRow, out_buf);
         //std::cout<<"serialize end" << std::endl;
 
-            *out_buf.position() = 0;
-            out_buf.position()++;
-            //out_buf.next();
-        }
+        *out_buf.position() = 0;
+        out_buf.position()++;
+        //out_buf.next();
+    }
     //ctx->tupleValues[0] = (char*)"0";
 
     //std::cout<<ctx->tupleValues[0] << " str"<<std::endl;
     //std::cout<< std::hex <<(uint64_t)(ctx->tupleValues[0]) << " ptr"<<std::endl;
 
-
     ctx->currentRow++;
     //std::cout<<"end of read call" << std::endl;
-    
+
     return 1;
 }
