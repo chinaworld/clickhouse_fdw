@@ -88,7 +88,7 @@ class Client : public Poco::Util::Application
   public:
     Client()
     {
-
+        std::cout<< "new Client "<< std::endl;
         static Context context_instance = Context::createGlobal();
         context = &context_instance;
     }
