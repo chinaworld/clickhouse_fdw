@@ -91,7 +91,7 @@ class Client : public Poco::Util::Application
 public:
     Client() {
     
-        static context_instance = Context::createGlobal();
+        static Context context_instance = Context::createGlobal();
         context = &context_instance;
     }
     std::vector<Block> *blocks;
