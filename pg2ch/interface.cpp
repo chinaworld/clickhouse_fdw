@@ -1384,7 +1384,7 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 extern "C" void begin_ch_query(CHReadCtx *ctx)
 {
     {
-        std::vector<std::string> arguments = {"", "--query", ctx->sql);//, "--host", "olapdb-test02f.mail.yandex.net", "--user", "reader", "--password", ctx->password};
+        std::vector<std::string> arguments = {"", "--query", ctx->sql};//, "--host", "olapdb-test02f.mail.yandex.net", "--user", "reader", "--password", ctx->password};
 
         std::vector<char *> argv;
         for (const auto &arg : arguments)
