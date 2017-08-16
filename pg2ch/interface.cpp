@@ -1339,12 +1339,12 @@ std::vector<DB::Block> *mainEntryClickHouseClient(int argc, char **argv, char *s
 
     try
     {
-        if (firstRun)
+        if (!firstRun)
         {
             firstRun = false;
             client.initStatic(argc, argv);
         }
-        //client.initWorker(sql);
+        client.initWorker(sql);
     }
     catch (const boost::program_options::error &e)
     {
