@@ -520,6 +520,7 @@ class Client : public Poco::Util::Application
 
     bool processSingleQuery(const String &line, ASTPtr parsed_query_ = nullptr)
     {
+        std::cout << "processSingleQuery" << std::endl;
         if (exit_strings.end() != exit_strings.find(line))
             return false;
 
