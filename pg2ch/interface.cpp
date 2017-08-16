@@ -1189,7 +1189,7 @@ private:
     }
 
 public:
-    void init(int argc, char ** argv)
+    void initStatic(int argc, char ** argv)
     {
         /// Don't parse options with Poco library. We need more sophisticated processing.
         stopOptionsProcessing();
@@ -1334,7 +1334,7 @@ public:
                 std::string text = e.displayText();
                 std::cerr << "Code: " << e.code() << ". " << text << std::endl;
                 std::cerr << "Table №" << i << std::endl << std::endl;
-                exit(e.code());
+                exit(e.code());ч
             }
         }
 
@@ -1384,18 +1384,28 @@ public:
         if (options.count("compression"))
             config().setBool("compression", options["compression"].as<bool>());
     }
+
+    void initStatic(char* sql)
+    {
+        config().setString("format", sql);
+    }
 };
 
 }
 
-std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv)
+std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv, char* sql)
 {
-    DB::Client client;
+    static bool firstRun = false;
+    static DB::Client client;
     client.blocks = new std::vector<DB::Block>{};
 
     try
     {
-        client.init(argc, argv);
+        if(firstRun){
+            firstRun = false;
+            client.initStatic(argc, argv);
+        }
+        client.initWorker(sql);
     }
     catch (const boost::program_options::error & e)
     {
@@ -1407,58 +1417,10 @@ std::vector<DB::Block>* mainEntryClickHouseClient(int argc, char ** argv)
     return client.blocks;
 }
 
-
-//
-
-// static void doInsert(DB::ASTInsertQuery *query)
-// {
-// }
-
 extern "C" void ExecuteCHQuery(char *cstrQuery)
 {
     try
-    {
-        /*
-        String query(cstrQuery);
-        const char *begin = query.data();
-        const char *end = begin + query.size();
-        const char *pos = begin;
-
-        DB::ParserQuery parser(end);
-        ASTPtr res;
-
-        String message;
-        res = DB::tryParseQuery(parser, pos, end, message, true, "", false);
-
-        DB::ASTInsertQuery *insert = typeid_cast<DB::ASTInsertQuery *>(&*res);
-        doInsert(insert);
-
-        auto connection = std::make_unique<DB::Connection>("localhost", DBMS_DEFAULT_PORT, "", "", "", "client", DB::Protocol::Compression::Enable,
-                                                           Poco::Timespan(DBMS_DEFAULT_CONNECT_TIMEOUT_SEC, 0),
-                                                           Poco::Timespan(DBMS_DEFAULT_RECEIVE_TIMEOUT_SEC, 0),
-                                                           Poco::Timespan(DBMS_DEFAULT_SEND_TIMEOUT_SEC, 0));
-        {
-            String server_name;
-            UInt64 server_version_major = 0;
-            UInt64 server_version_minor = 0;
-            UInt64 server_revision = 0;
-
-            std::cout << "Connecting to ";
-            connection->getServerVersion(server_name, server_version_major, server_version_minor, server_revision);
-
-            std::cout << "Connected to " << server_name
-                      << " server version " << server_version_major
-                      << "." << server_version_minor
-                      << "." << server_revision
-                      << "." << std::endl
-                      << std::endl;
-        }
-
-        {
-            DB::IAST::FormatSettings settings(std::cout, true, false);
-            res->format(settings);
-        }
-        */
+    {        
         {
             std::vector<std::string> arguments = {"","--query",cstrQuery};
 
@@ -1469,16 +1431,6 @@ extern "C" void ExecuteCHQuery(char *cstrQuery)
 
             mainEntryClickHouseClient(argv.size() - 1, argv.data());
         }
-
-        //static DB::Context context = DB::Context::createGlobal();
-        /*String query_without_data = insert->data
-                                        ? query.substr(0, parsed_insert_query.data - query.data())
-                                        : query;*/
-
-        //if (!parsed_insert_query.data && (is_interactive || (stdin_is_not_tty && std_in.eof())))
-        //    throw Exception("No data to insert", ErrorCodes::NO_DATA_TO_INSERT);
-
-        //connection->sendQuery(query, "", DB::QueryProcessingStage::Complete, &context.getSettingsRef(), nullptr, true);
     }
     catch (const Poco::Exception &e)
     {
