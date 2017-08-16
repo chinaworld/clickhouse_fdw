@@ -264,71 +264,6 @@ class Client : public Poco::Util::Application
 
     int mainImpl(const std::vector<std::string> &args)
     {
-        registerFunctions();
-        registerAggregateFunctions();
-
-        /// Batch mode is enabled if one of the following is true:
-        /// - -e (--query) command line option is present.
-        ///   The value of the option is used as the text of query (or of multiple queries).
-        ///   If stdin is not a terminal, INSERT data for the first query is read from it.
-        /// - stdin is not a terminal. In this case queries are read from it.
-        stdin_is_not_tty = !isatty(STDIN_FILENO);
-        if (stdin_is_not_tty || config().has("query"))
-            is_interactive = false;
-
-        std::cout << std::fixed << std::setprecision(3);
-        std::cerr << std::fixed << std::setprecision(3);
-
-        if (is_interactive)
-            showClientVersion();
-
-        is_default_format = !config().has("vertical") && !config().has("format");
-        if (config().has("vertical"))
-            format = config().getString("format", "Vertical");
-        else
-            format = config().getString("format", is_interactive ? "PrettyCompact" : "TabSeparated");
-
-        format_max_block_size = config().getInt("format_max_block_size", context->getSettingsRef().max_block_size);
-
-        insert_format = "Values";
-        insert_format_max_block_size = config().getInt("insert_format_max_block_size", context->getSettingsRef().max_insert_block_size);
-
-        if (!is_interactive)
-        {
-            need_render_progress = config().getBool("progress", false);
-            echo_queries = config().getBool("echo", false);
-        }
-
-        connect();
-
-        /// Initialize DateLUT here to avoid counting time spent here as query execution time.
-        DateLUT::instance();
-        if (!context->getSettingsRef().use_client_time_zone)
-        {
-            const auto &time_zone = connection->getServerTimezone();
-            if (!time_zone.empty())
-            {
-                try
-                {
-                    DateLUT::setDefaultTimezone(time_zone);
-                }
-                catch (...)
-                {
-                    std::cerr << "Warning: could not switch to server time zone: " << time_zone
-                              << ", reason: " << getCurrentExceptionMessage(/* with_stacktrace = */ false) << std::endl
-                              << "Proceeding with local time zone."
-                              << std::endl
-                              << std::endl;
-                }
-            }
-            else
-            {
-                std::cerr << "Warning: could not determine server time zone. "
-                          << "Proceeding with local time zone."
-                          << std::endl
-                          << std::endl;
-            }
-        }
 
         if (is_interactive)
         {
@@ -1327,6 +1262,71 @@ class Client : public Poco::Util::Application
     void initWorker(char *sql)
     {
         config().setString("query", sql);
+        registerFunctions();
+        registerAggregateFunctions();
+
+        /// Batch mode is enabled if one of the following is true:
+        /// - -e (--query) command line option is present.
+        ///   The value of the option is used as the text of query (or of multiple queries).
+        ///   If stdin is not a terminal, INSERT data for the first query is read from it.
+        /// - stdin is not a terminal. In this case queries are read from it.
+        stdin_is_not_tty = !isatty(STDIN_FILENO);
+        if (stdin_is_not_tty || config().has("query"))
+            is_interactive = false;
+
+        std::cout << std::fixed << std::setprecision(3);
+        std::cerr << std::fixed << std::setprecision(3);
+
+        if (is_interactive)
+            showClientVersion();
+
+        is_default_format = !config().has("vertical") && !config().has("format");
+        if (config().has("vertical"))
+            format = config().getString("format", "Vertical");
+        else
+            format = config().getString("format", is_interactive ? "PrettyCompact" : "TabSeparated");
+
+        format_max_block_size = config().getInt("format_max_block_size", context->getSettingsRef().max_block_size);
+
+        insert_format = "Values";
+        insert_format_max_block_size = config().getInt("insert_format_max_block_size", context->getSettingsRef().max_insert_block_size);
+
+        if (!is_interactive)
+        {
+            need_render_progress = config().getBool("progress", false);
+            echo_queries = config().getBool("echo", false);
+        }
+
+        connect();
+
+        /// Initialize DateLUT here to avoid counting time spent here as query execution time.
+        DateLUT::instance();
+        if (!context->getSettingsRef().use_client_time_zone)
+        {
+            const auto &time_zone = connection->getServerTimezone();
+            if (!time_zone.empty())
+            {
+                try
+                {
+                    DateLUT::setDefaultTimezone(time_zone);
+                }
+                catch (...)
+                {
+                    std::cerr << "Warning: could not switch to server time zone: " << time_zone
+                              << ", reason: " << getCurrentExceptionMessage(/* with_stacktrace = */ false) << std::endl
+                              << "Proceeding with local time zone."
+                              << std::endl
+                              << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "Warning: could not determine server time zone. "
+                          << "Proceeding with local time zone."
+                          << std::endl
+                          << std::endl;
+            }
+        }
     }
 };
 }
