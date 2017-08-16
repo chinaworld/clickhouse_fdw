@@ -126,7 +126,7 @@ private:
 
     bool has_vertical_output_suffix = false; /// Is \G present at the end of the query string?
 
-    static bool context_is_initied = false;
+    static bool context_is_initied;
     static Context context;
 
     /// Buffer that reads from stdin in batch mode.
