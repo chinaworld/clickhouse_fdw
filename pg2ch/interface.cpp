@@ -1450,7 +1450,7 @@ extern "C" void begin_ch_query(CHReadCtx *ctx){
                 argv.push_back((char *)arg.data());
             argv.push_back(nullptr);
 
-            auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data());
+            auto blocks = mainEntryClickHouseClient(argv.size() - 1, argv.data(), ctx->sql);
             ctx->blocks = (void*) blocks; 
             ctx->blockRows = (*blocks)[0].rows();
             std::stringstream* str_stream = new std::stringstream{};
