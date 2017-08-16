@@ -1453,9 +1453,10 @@ extern "C" int read_ch_query(CHReadCtx *ctx)
         out_buf.position()++;
 
 
-            std::cout << ctx->tupleValues[j] << std::endl;
+            std::cout << ctx->tupleValues[j] << (int)(ctx->tupleValues[j] - ctx->tupleValues[0])<<'|';
         //out_buf.next();
     }
+
     std::cout << std::endl;
     //ctx->tupleValues[0] = (char*)"0";
 
